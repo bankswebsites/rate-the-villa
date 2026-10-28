@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rate the Villa</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap">
+<style>
+:root{--bg:#fff;--fg:#1d1d1f;--mut:#6b6b73;--card:#f4f1f3;--claret:#670e36;--sky:#95bfe5;--line:#ddd;--on:#fff;--w:#2e9b4f;--d:#9a8f3a;--l:#c0392b;--hd:"Oswald","Arial Narrow",Impact,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15101a;--fg:#f2eef4;--mut:#a79fb0;--card:#241b2c;--line:#3a2f45;--claret:#b8346f}}
+:root[data-theme="dark"]{--bg:#15101a;--fg:#f2eef4;--mut:#a79fb0;--card:#241b2c;--line:#3a2f45;--claret:#b8346f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+main{max-width:1120px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:0;font-size:1.7rem;color:var(--claret)}
+.sub{color:var(--mut);margin:4px 0 14px;font-size:.9rem}
+.chips{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.chip{min-width:0;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:7px 3px;font:inherit;font-size:.72rem;cursor:pointer;text-align:center;overflow-wrap:anywhere;border-bottom:4px solid var(--line)}
+.chip.W{border-bottom-color:var(--w)}.chip.D{border-bottom-color:var(--d)}.chip.L{border-bottom-color:var(--l)}
+.chip.on{background:var(--claret);color:var(--on);border-color:var(--claret)}
+.chip small{display:block;opacity:.75}
+.chip.cl{border-top:3px solid #2a6fb5}
+.sh{margin:4px 0 10px;font-size:1.05rem}
+#cards .sh:not(:first-child){margin-top:20px}
+.mh{background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:12px}
+.mh b{font-size:1.15rem}
+.mh div{color:var(--mut);font-size:.82rem;margin-top:2px}
+h3{margin:0 0 6px;font-size:1rem}
+.top3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tc{background:var(--card);border-radius:12px;padding:10px 6px;text-align:center;border-top:4px solid var(--line)}
+.tc.r1{border-top-color:#d4a72c}.tc.r2{border-top-color:#9aa0a6}.tc.r3{border-top-color:#b36b3a}
+.tc em{font-style:normal;font-size:.7rem;color:var(--mut);display:block}
+.tc b{display:block;font-size:.95rem;margin:2px 0}
+.tc strong{font-size:1.3rem;color:var(--claret)}
+.tc small{display:block;color:var(--mut);font-size:.7rem}
+.team{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.team small{display:block;color:var(--mut)}
+.team b{font-size:1.6rem;color:var(--claret);white-space:nowrap}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.avgb{text-align:right;background:var(--card);border-radius:12px;padding:6px 12px;flex:0 0 auto}
+.avgb small{display:block;color:var(--mut);font-size:.7rem}
+.avgb b{font-size:1.4rem;color:var(--claret);white-space:nowrap}
+.card{display:flex;gap:12px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#8a1546,#4d0a29);margin-bottom:12px;color:#fff}
+.ph{position:relative;flex:0 0 88px;height:128px;border:3px solid #fff;border-radius:12px;background:rgba(255,255,255,.12);overflow:hidden}
+.ph svg{position:absolute;inset:0;width:100%;height:100%}
+.bd{position:absolute;top:6px;left:6px;z-index:1;background:#241018;color:#fff;font:600 .7rem var(--hd);padding:3px 7px;border-radius:7px}
+.rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.rt h2{margin:0;font:600 1.45rem/1.1 var(--hd);text-transform:uppercase;letter-spacing:.01em;overflow-wrap:anywhere}
+.g{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.g button{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:38px;padding:4px 0;border:0;border-radius:9px;background:#fff;color:#1d1d1f;font:inherit;font-weight:700;font-size:.95rem;cursor:pointer;line-height:1.1}
+.g button small{font-size:.7rem;font-weight:600;color:#55555d}
+.g button{min-height:44px}
+.g button.on{background:var(--sky)}
+.g button:disabled{cursor:default;opacity:.85}
+.cap{font-size:.72rem;opacity:.85;margin-top:-2px}
+.ft{display:flex;align-items:center;gap:10px;margin-top:auto}
+.st{width:38px;height:38px;flex:0 0 38px;border-radius:50%;border:2px solid #fff;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.st:disabled{cursor:default;opacity:.85}
+.st.on{background:rgba(212,167,44,.25);border-color:#f0c64a}
+.ft span{font-size:.78rem;opacity:.9}
+.note{color:var(--mut);font-size:.82rem;margin:0 0 12px}
+.fx{display:flex;justify-content:space-between;padding:9px 2px;border-bottom:1px solid var(--line);font-size:.92rem}
+.fx span:last-child{color:var(--mut);font-size:.82rem}
+.logo{margin:0}
+.logo img{display:block;width:150px;max-width:100%;height:auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.top .tabs{margin:0}
+.top .tabs button{flex:0 0 auto;padding:8px 16px}
+.layout{display:grid;gap:14px}
+section[hidden]{display:none}
+#vChat{max-width:1120px}
+.tabs{display:flex;gap:8px;margin:12px 0}
+.tabs button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:600 1rem var(--hd);letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.tabs button.on{background:var(--claret);color:#fff;border-color:var(--claret)}
+.threads{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.threads button{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 12px;font:inherit;font-size:.8rem;cursor:pointer}
+.threads button.on{background:var(--claret);color:#fff;border-color:var(--claret)}
+.chat{background:var(--card);border-radius:12px;padding:12px;height:min(55vh,520px);overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.m{max-width:85%;padding:8px 12px;border-radius:14px;background:var(--bg);align-self:flex-start;overflow-wrap:anywhere}
+.m.me{align-self:flex-end;background:var(--claret);color:#fff}
+.m b{display:block;font-size:.72rem;opacity:.75;margin-bottom:2px}
+.m small{display:block;font-size:.65rem;opacity:.6;margin-top:2px}
+.m small button{background:none;border:0;color:inherit;cursor:pointer;font-size:.65rem;padding:0 0 0 8px;text-decoration:underline}
+.send{display:flex;gap:8px;margin-top:10px}
+.send input{flex:1;min-width:0;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit}
+.send button{padding:0 20px;border:0;border-radius:10px;background:var(--claret);color:#fff;font:600 1rem var(--hd);text-transform:uppercase;cursor:pointer}
+.send button:disabled,.send input:disabled{opacity:.5;cursor:default}
+.tw{display:flex;flex-direction:column;gap:6px}
+.tg{align-self:flex-start;background:none;border:0;color:var(--claret);font:inherit;font-size:.78rem;font-weight:600;cursor:pointer;padding:0 4px}
+.rps{margin-left:18px;padding-left:10px;border-left:3px solid var(--sky);display:flex;flex-direction:column;gap:6px}
+.rbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;border-radius:10px;background:var(--card);border-left:4px solid var(--claret);font-size:.82rem}
+.rbar[hidden]{display:none}
+.m small button.lk{text-decoration:none;font-size:.8rem;opacity:.85}
+.m small button.lk.on{color:#e0457b;opacity:1}
+.m.me small button.lk.on{color:#ffc2d9}
+.m small button:disabled{opacity:.75;cursor:default}
+.lg{width:1.6em;height:1.6em;object-fit:contain;vertical-align:middle}
+.chip .lg{display:block;margin:0 auto 3px;width:28px;height:28px}
+.mh .lg{width:30px;height:30px;margin:0 8px}
+.fx .lg{width:24px;height:24px;margin-right:8px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.lc{background:var(--card);border-radius:12px;padding:10px;text-align:center;font-size:.82rem}
+.lc .lg{width:48px;height:48px;display:block;margin:0 auto 6px}
+.lc .ph0{width:48px;height:48px;margin:0 auto 6px;border-radius:50%;background:var(--line)}
+.lc label{display:inline-block;margin-top:6px;padding:5px 10px;border-radius:8px;background:var(--claret);color:#fff;font-size:.75rem;cursor:pointer}
+.lc input{display:none}
+.pimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+.ph .up{position:absolute;left:4px;right:4px;bottom:4px;z-index:2;text-align:center;background:rgba(0,0,0,.65);color:#fff;font-size:.62rem;padding:4px 2px;border-radius:7px;cursor:pointer}
+.ph .up input{display:none}
+.fxf{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.fxf button{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 12px;font:inherit;font-size:.8rem;cursor:pointer}
+.fxf button.on{background:var(--claret);color:#fff;border-color:var(--claret)}
+.fh{margin:14px 0 4px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.fr{display:grid;grid-template-columns:96px 1fr auto;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:.92rem}
+.fr small{display:block;color:var(--mut);font-size:.75rem}
+.fr .cp{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--claret);color:#fff;margin-left:6px;white-space:nowrap}
+.fr .cp.u{background:#2a6fb5}
+.fr .rs{font-weight:700;padding:3px 9px;border-radius:8px;color:#fff;font-size:.85rem}
+.rs.W{background:var(--w)}.rs.D{background:var(--d)}.rs.L{background:var(--l)}
+.ctop{background:var(--card);border-radius:12px;padding:14px;margin-top:14px}
+.ctop h3{margin:0 0 6px}
+.tl{padding:8px 0;border-top:1px solid var(--line)}
+.tlh{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;color:var(--mut)}
+.tlh span{color:#e0457b;font-weight:700}
+.tl p{margin:2px 0 0;overflow-wrap:anywhere}
+@media(min-width:900px){#vChat:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}.ctop{margin-top:0;position:sticky;top:16px}}
+.rbar span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rbar button{background:none;border:0;color:var(--mut);cursor:pointer;font-size:1rem}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.pills span{background:#95bfe5;color:#670e36;border-radius:999px;padding:8px 18px;font:600 1rem var(--hd);letter-spacing:.08em;text-transform:uppercase}
+@media(min-width:900px){
+html{font-size:118%}
+.layout{grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+#cards{grid-column:1;grid-row:1}
+.side{grid-column:2;grid-row:1;position:sticky;top:16px}
+.ph{flex-basis:130px;height:180px}
+.g button{min-height:52px}
+.st{width:46px;height:46px;flex-basis:46px}
+}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><h1 class="logo"><img src="rate-the-villa-header.png" alt="Rate the Villa"></h1>
+<nav class="tabs"><button id="tR" class="on">Ratings</button><button id="tC">Chat</button></nav></header>
+<section id="vRate">
+<p class="sub">Pick a match, rate each player out of 10 and tap the star for your Man of the Match.</p>
+<div class="chips" id="chips"></div>
+<div class="mh" id="mh"></div>
+<div class="layout">
+<aside class="side"><h3>Man of the Match</h3>
+<div class="top3" id="top3"></div>
+<div class="team"><span>Team average</span><b class="avgv">–</b></div>
+<p class="note" id="voters"></p>
+<p class="note" id="msg"></p></aside>
+<div id="cards"></div>
+</div>
+<h3 style="margin-top:22px">Fixtures</h3>
+<div class="fxf" id="fxf"></div>
+<div id="fx"></div>
+<p class="note" style="margin-top:12px">Lineups are the first eleven names listed in the match data and the substitutes are the four listed after them, so double-check them. The data lists fewer substitutes than Villa actually used in some games. Fixtures and results were pulled on 28 Oct 2026 and don’t update by themselves. Times are UK time. FA Cup and League Cup ties will be added once the opponents are confirmed.</p>
+<div id="logoAdmin" hidden><h3 style="margin-top:22px">Team logos (editors only)</h3><p class="note">Upload a logo for each team and everyone who opens the page will see it.</p><div class="lgrid" id="lgrid"></div><p class="note" id="lmsg" style="margin-top:8px"></p></div>
+</section>
+<section id="vChat" hidden>
+<div class="cmain">
+<p class="sub">Talk about the game with other fans. Keep it friendly and about the football.</p>
+<div class="threads" id="threads"></div>
+<div class="chat" id="chatBox"></div>
+<div class="join" id="join" hidden><p class="note" style="margin:0 0 8px">Pick a name to join the chat. Everyone will see it.</p><div class="send" style="margin-top:0"><input id="nin" maxlength="20" placeholder="Your name" autocomplete="off"><button id="njoin">Join chat</button></div></div>
+<div class="rbar" id="rbar" hidden><span id="rtxt"></span><button id="rx" aria-label="Cancel reply">✕</button></div>
+<div class="send" id="sendRow"><input id="cin" maxlength="300" placeholder="Say something about the game…" autocomplete="off" disabled><button id="csend" disabled>Send</button></div>
+<p class="note" id="cmsg" style="margin-top:8px"></p>
+</div>
+<aside class="ctop" id="ctop"></aside>
+</section>
+</main>
+<script>
+var M=[
+{id:"mci",d:"Sat 24 Oct",h:"Aston Villa",a:"Man City",hs:2,as:1,o:"Man City",ven:"H",r:"W",st:"37% · 8–15 · 2–7",
+ gk:["Suzuki"],df:["Maatsen","Torres","Lindelöf","Cash"],mf:["McGinn","Manzambi","Gomes","Kamara"],fw:["Alysson","Jackson"],bn:["Hemmings","Mbaye","Madjo","Barkley"]},
+{id:"vik",d:"Wed 21 Oct",h:"Aston Villa",a:"Viking",hs:3,as:1,o:"Viking",ven:"H",r:"W",c:"UCL",st:"54% · 19–10 · 9–4",
+ gk:["Suzuki"],df:["Torres","Lindelöf","Mings"],mf:["McGinn","Barkley","Gomes","Buendia"],fw:["Alysson","Mbaye","Jackson"],bn:["Hemmings","Bogarde","Goretzka","Kamara"]},
+{id:"new",d:"Sat 17 Oct",h:"Newcastle",a:"Aston Villa",hs:0,as:1,o:"Newcastle",ven:"A",r:"W",st:"51% · 15–11 · 3–1",
+ gk:["Suzuki"],df:["Wan-Bissaka","Mings","Lindelöf","Cash"],mf:["Manzambi","Buendia","Gomes","Kamara"],fw:["Alysson","Jackson"],bn:["Madjo","Barkley","Mbaye","Bogarde"]},
+{id:"fen",d:"Wed 14 Oct",h:"Aston Villa",a:"Fenerbahçe",hs:6,as:0,o:"Fenerbahçe",ven:"H",r:"W",c:"UCL",st:"50% · 20–16 · 13–5",
+ gk:["Suzuki"],df:["Wan-Bissaka","Torres","Lindelöf","Cash"],mf:["McGinn","Manzambi","Barkley","Kamara"],fw:["Mbaye","Jackson"],bn:["Wright","Alysson","Bogarde","Gomes"]},
+{id:"bre",d:"Sat 10 Oct",h:"Aston Villa",a:"Brentford",hs:2,as:2,o:"Brentford",ven:"H",r:"D",st:"53% · 18–13 · 7–5",
+ gk:["Suzuki"],df:["Ruggeri","Mings","Lindelöf","Cash"],mf:["McGinn","Manzambi","Buendia","Gomes","Kamara"],fw:["Jackson"],bn:["Mbaye","Alysson","Barkley","Bogarde"]},
+{id:"tot",d:"Sat 19 Sep",h:"Spurs",a:"Aston Villa",hs:2,as:3,o:"Spurs",ven:"A",r:"W",st:"37% · 14–18 · 6–8",
+ gk:["Suzuki"],df:["Ruggeri","Mings","Lindelöf","Wan-Bissaka"],mf:["McGinn","Manzambi","Buendia","Gomes","Kamara"],fw:["Jackson"]},
+{id:"nfo",d:"Sat 12 Sep",h:"Aston Villa",a:"Nottingham Forest",hs:1,as:2,o:"Forest",ven:"H",r:"L",st:"56% · 6–21 · 6–7",
+ gk:["Suzuki"],df:["Maatsen","Torres","Lindelöf","Wan-Bissaka"],mf:["McGinn","Buendia","Barkley","Kamara"],fw:["Hemmings","Jackson"]},
+{id:"hul",d:"Sat 5 Sep",h:"Hull City",a:"Aston Villa",hs:0,as:0,o:"Hull",ven:"A",r:"D",st:"76% · 11–10 · 2–4",
+ gk:["Suzuki"],df:["Maatsen","Mings","Lindelöf","Cash"],mf:["McGinn","Buendia","Barkley","Kamara"],fw:["Hemmings","Jackson"]},
+{id:"ars",d:"Mon 31 Aug",h:"Aston Villa",a:"Arsenal",hs:0,as:1,o:"Arsenal",ven:"H",r:"L",st:"39% · 7–7 · 0–2",
+ gk:["Suzuki"],df:["Maatsen","Torres","Lindelöf","Cash"],mf:["McGinn","Buendia","Barkley","Kamara"],fw:["Hemmings","Jackson"]},
+{id:"bri",d:"Sun 23 Aug",h:"Brighton",a:"Aston Villa",hs:4,as:0,o:"Brighton",ven:"A",r:"L",st:"28% · 6–17 · 0–6",
+ gk:["Bizot"],df:["Maatsen","Torres","Lindelöf","Cash"],mf:["McGinn","Buendia","Gomes","Barkley","Kamara"],fw:["Hemmings"]}
+];
+var FX=[["Fulham (H)","Sat 31 Oct, 8:00pm"],["Man United (A)","Sun 8 Nov, 4:30pm"],["Sunderland (H)","Sat 21 Nov, 3:00pm"],["Ipswich (A)","Sat 28 Nov, 5:30pm"]];
+var BD={GK:"GK",DF:"DEF",MF:"MID",FW:"FWD"};
+var SIL='<svg viewBox="0 0 100 130" aria-hidden="true"><circle cx="50" cy="50" r="20" fill="rgba(255,255,255,.35)"/><path d="M10 130c0-32 18-48 40-48s40 16 40 48z" fill="rgba(255,255,255,.35)"/></svg>';
+var STAR=function(on){return '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" fill="'+(on?"#f0c64a":"none")+'" stroke="'+(on?"#f0c64a":"#fff")+'" stroke-width="1.6" stroke-linejoin="round"/></svg>'};
+var cur=M[0],db=null,uid=null,canVote=false,msg="",votes=[],mine={},motm=[],mineM={};
+function norm(r){r=r||{};var k=Object.keys(r);if(k.length&&typeof r[k[0]]==="number")return {mci:r};return r}
+function names(){return [].concat(cur.gk,cur.df,cur.mf,cur.fw,cur.bn||[])}
+var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK"};
+function posOf(n){if(cur.bn&&cur.bn.indexOf(n)>=0)return BPOS[n]||"MF";return cur.gk.indexOf(n)>=0?"GK":cur.df.indexOf(n)>=0?"DF":cur.mf.indexOf(n)>=0?"MF":"FW"}
+function stats(n){
+ var c=[0,0,0,0,0,0,0,0,0,0],t=0,s=0;
+ votes.forEach(function(v){var r=v&&v[cur.id]&&v[cur.id][n];if(r>=1&&r<=10&&r%1===0){c[r-1]++;t++;s+=r}});
+ return {c:c,t:t,avg:t?s/t:null};
+}
+function mcount(){
+ var mc={};
+ motm.forEach(function(m){var n=m&&m[cur.id];if(n)mc[n]=(mc[n]||0)+1});
+ return mc;
+}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+function render(){
+ var ch=document.getElementById("chips");ch.innerHTML="";
+ M.slice(0,5).forEach(function(m){
+  var b=el("button","chip "+m.r+(m.c?" cl":"")+(m===cur?" on":""),lg(OC[m.id])+"v "+m.o+"<small>"+m.d.split(" ").slice(1).join(" ")+" · "+(m.ven==="H"?m.hs+"–"+m.as:m.as+"–"+m.hs)+"</small>");
+  b.onclick=function(){cur=m;render()};ch.appendChild(b)});
+ document.getElementById("mh").innerHTML="<b>"+lg(NC[cur.h])+cur.h+" "+cur.hs+"–"+cur.as+" "+cur.a+lg(NC[cur.a])+"</b><div>"+cur.d+" 2026 · "+(cur.c==="UCL"?"Champions League":"Premier League")+" · "+(cur.ven==="H"?"Home":"Away")+" · Villa possession, shots, on target: "+cur.st+"</div>";
+ var mc=mcount(),list=names(),sum=0,c=0,voters=0,best=null,mt=0;
+ votes.forEach(function(v){if(v&&v[cur.id]&&Object.keys(v[cur.id]).length)voters++});
+ list.forEach(function(n){var s=stats(n);if(s.t){sum+=s.avg;c++}if(mc[n]){mt+=mc[n];if(best===null||mc[n]>mc[best])best=n}});
+ var tie=best!==null&&list.filter(function(n){return mc[n]===mc[best]}).length>1;
+ var av=c?(sum/c).toFixed(1)+" / 10":"–";document.querySelectorAll(".avgv").forEach(function(e){e.textContent=av});
+ document.getElementById("voters").textContent=(voters?voters+(voters===1?" voter":" voters"):"No votes yet")+(best?" · MOTM "+(tie?"tied":best+" ("+mc[best]+")"):"");
+ document.getElementById("msg").textContent=msg;
+ renderTop3(mc);
+ var box=document.getElementById("cards");box.innerHTML="";
+ list.forEach(function(n){
+  var s=stats(n),my=(mine[cur.id]||{})[n],isM=mineM[cur.id]===n;
+  if(n===list[0])box.appendChild(el("h3","sh","Starting XI"));
+  if(cur.bn&&n===cur.bn[0])box.appendChild(el("h3","sh","Substitutes"));
+  var card=el("div","card");
+  var ph=el("div","ph",'<span class="bd">'+BD[posOf(n)]+'</span>'+phHtml(n));
+  if(isEd&&assetsNs&&db){var lab=document.createElement("label");lab.className="up";lab.textContent=pics[pk(n)]?"Change photo":"Add photo";var inp=document.createElement("input");inp.type="file";inp.accept="image/png,image/jpeg,image/webp";inp.onchange=function(){upPhoto(n,inp.files&&inp.files[0])};lab.appendChild(inp);ph.appendChild(lab)}
+  card.appendChild(ph);
+  var rt=el("div","rt");rt.appendChild(el("h2","",n));
+  var g=el("div","g");
+  for(var i=1;i<=10;i++)(function(i){
+   var b=el("button",my===i?"on":"","<span>"+i+"</span><small>"+s.c[i-1]+"</small>");
+   b.disabled=!canVote;b.setAttribute("aria-label","Rate "+n+" "+i+" out of 10");
+   b.onclick=function(){vote(n,i)};g.appendChild(b)})(i);
+  rt.appendChild(g);
+  var ft=el("div","ft");
+  var st=el("button","st"+(isM?" on":""),STAR(isM));st.disabled=!canVote;st.setAttribute("aria-label","Man of the Match: "+n);
+  st.onclick=function(){voteMotm(n)};
+  ft.appendChild(st);
+  ft.appendChild(el("span","",(s.t?s.avg.toFixed(1)+" avg · "+s.t+(s.t===1?" vote":" votes"):"No votes yet")+(mc[n]?" · "+mc[n]+" MOTM":"")+(my?" · You: "+my:"")));
+  rt.appendChild(ft);card.appendChild(rt);box.appendChild(card)});
+}
+function renderTop3(mc){
+ var t=document.getElementById("top3");t.innerHTML="";
+ var rk=names().map(function(n){var s=stats(n);return {n:n,avg:s.avg,t:s.t,m:mc[n]||0}}).filter(function(x){return x.t>0}).sort(function(a,b){return b.avg-a.avg||b.t-a.t||b.m-a.m}).slice(0,3);
+ for(var i=0;i<3;i++){
+  var x=rk[i];
+  t.appendChild(el("div","tc r"+(i+1),x?"<em>#"+(i+1)+"</em><b>"+x.n+"</b><strong>"+x.avg.toFixed(1)+"</strong><small>"+x.t+(x.t===1?" vote":" votes")+(x.m?" · "+x.m+" MOTM":"")+"</small>":"<em>#"+(i+1)+"</em><b>–</b><small>No votes yet</small>"));
+ }
+}
+function save(){
+ db.doc("votes/"+uid).set({uid:uid,ratings:mine,motm:mineM}).catch(function(){msg="Couldn’t save your vote. Try again.";render()});
+}
+function vote(n,r){
+ if(!canVote||!db||!uid)return;
+ mine[cur.id]=mine[cur.id]||{};mine[cur.id][n]=r;msg="";render();save();
+}
+function voteMotm(n){
+ if(!canVote||!db||!uid)return;
+ if(mineM[cur.id]===n)delete mineM[cur.id];else mineM[cur.id]=n;
+ msg="";render();save();
+}
+var T=[{id:"ful",l:"v Fulham · next match"}].concat(M.slice(0,5).map(function(m){return {id:m.id,l:"v "+m.o+" · "+m.d.split(" ").slice(1).join(" ")}}));
+var thread="ful",chatDocs=[],myMsgs=[],myName="",userNs=null,lastSend=0,view="rate",open={},replyTo=null,myLikes=[];
+function setCmsg(t){document.getElementById("cmsg").textContent=t}
+function showView(v){
+ view=v;
+ document.getElementById("vRate").hidden=v!=="rate";
+ document.getElementById("vChat").hidden=v!=="chat";
+ document.getElementById("tR").className=v==="rate"?"on":"";
+ document.getElementById("tC").className=v==="chat"?"on":"";
+ if(v==="chat")renderChat(true);
+}
+async function renderChat(snap){
+ if(!canVote)setCmsg(msg||"Sign in to claude.ai to join the chat.");
+ syncJoin();
+ var th=document.getElementById("threads");th.innerHTML="";
+ T.forEach(function(t){var b=el("button",t.id===thread?"on":"",t.l);b.onclick=function(){thread=t.id;replyTo=null;showRbar();renderChat(true)};th.appendChild(b)});
+ var all=[];
+ chatDocs.forEach(function(d){(d.msgs||[]).forEach(function(x){if(x&&x.m===thread&&typeof x.x==="string")all.push({u:d.uid,i:x.i,t:x.t||0,x:x.x,p:typeof x.p==="string"?x.p:""})})});
+ all.sort(function(a,b){return a.t-b.t});
+ var ids=[];all.forEach(function(m){if(m.u&&ids.indexOf(m.u)<0)ids.push(m.u)});
+ var nmap={};chatDocs.forEach(function(d){if(d&&d.uid&&typeof d.name==="string")nmap[d.uid]=d.name.slice(0,20)});
+ var lk={};chatDocs.forEach(function(d){var seen={};(Array.isArray(d.likes)?d.likes:[]).forEach(function(id){if(typeof id==="string"&&!seen[id]){seen[id]=1;lk[id]=(lk[id]||0)+1}})});
+ var box=document.getElementById("chatBox");
+ var st=box.scrollTop;var bottom=snap||box.scrollHeight-box.scrollTop-box.clientHeight<60;
+ box.innerHTML="";
+ if(!all.length)box.appendChild(el("div","note","No messages yet. Start the chat!"));
+ function bub(m){
+  var mine2=m.u===uid,d=el("div","m"+(mine2?" me":""));
+  var nm=document.createElement("b");nm.textContent=mine2?"You":(nmap[m.u]||"Fan");d.appendChild(nm);
+  var tx=document.createElement("span");tx.textContent=m.x;d.appendChild(tx);
+  var sm=document.createElement("small");sm.textContent=new Date(m.t).toLocaleString([],{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+  var liked=myLikes.indexOf(m.i)>=0,lb=document.createElement("button");lb.className="lk"+(liked?" on":"");lb.textContent=(liked?"♥ ":"♡ ")+(lk[m.i]||"");lb.disabled=!canVote||mine2;lb.setAttribute("aria-label","Like");lb.onclick=function(){toggleLike(m.i)};sm.appendChild(lb);
+  var rb=document.createElement("button");rb.textContent="reply";rb.onclick=function(){setReply({i:(m.p&&byId[m.p])?m.p:m.i,n:mine2?"yourself":(nmap[m.u]||"Fan"),x:m.x.slice(0,60)})};sm.appendChild(rb);
+  if(mine2){var del=document.createElement("button");del.textContent="delete";del.onclick=function(){delMsg(m.i)};sm.appendChild(del)}
+  d.appendChild(sm);return d}
+ var byId={},tops=[],rps={};
+ all.forEach(function(m){byId[m.i]=m});
+ all.forEach(function(m){if(m.p&&byId[m.p]){(rps[m.p]=rps[m.p]||[]).push(m)}else tops.push(m)});
+ tops.forEach(function(m){
+  var w=el("div","tw");w.appendChild(bub(m));
+  var r=rps[m.i]||[];
+  if(r.length){
+   var tg=el("button","tg",(open[m.i]?"▾ ":"▸ ")+r.length+(r.length===1?" reply":" replies"));
+   tg.onclick=function(){open[m.i]=!open[m.i];renderChat(false)};w.appendChild(tg);
+   if(open[m.i]){var rl=el("div","rps");r.forEach(function(x){rl.appendChild(bub(x))});w.appendChild(rl)}
+  }
+  box.appendChild(w)});
+ if(bottom)box.scrollTop=box.scrollHeight;else box.scrollTop=st;
+ var tp=all.filter(function(m){return lk[m.i]>0}).sort(function(a,b){return lk[b.i]-lk[a.i]||b.t-a.t}).slice(0,5);
+ var ct=document.getElementById("ctop");ct.innerHTML="";
+ var h=document.createElement("h3");h.textContent="Top 5 liked messages";ct.appendChild(h);
+ if(!tp.length)ct.appendChild(el("p","note","No likes yet. Tap the ♡ on a message you like."));
+ tp.forEach(function(m,i){
+  var c=el("div","tl"),hd=el("div","tlh");
+  var a=document.createElement("b");a.textContent="#"+(i+1)+" "+(m.u===uid?"You":(nmap[m.u]||"Fan"));
+  var n=document.createElement("span");n.textContent="♥ "+lk[m.i];
+  hd.appendChild(a);hd.appendChild(n);
+  var t=document.createElement("p");t.textContent=m.x.length>120?m.x.slice(0,117)+"…":m.x;
+  c.appendChild(hd);c.appendChild(t);ct.appendChild(c)});
+}
+function toggleLike(id){
+ if(!canVote||!db||!uid)return;
+ var k=myLikes.indexOf(id);
+ if(k>=0)myLikes.splice(k,1);else myLikes.push(id);
+ if(myLikes.length>500)myLikes=myLikes.slice(-500);
+ saveChat(true);
+}
+function showRbar(){
+ var b=document.getElementById("rbar");
+ b.hidden=!replyTo;
+ if(replyTo)document.getElementById("rtxt").textContent="Replying to "+replyTo.n+": "+replyTo.x;
+}
+function setReply(r){
+ replyTo=r;open[r.i]=true;showRbar();renderChat(false);
+ document.getElementById("cin").focus();
+}
+function syncJoin(){
+ var need=canVote&&!myName;
+ document.getElementById("join").hidden=!need;
+ document.getElementById("sendRow").hidden=need;
+}
+function joinName(){
+ var v=document.getElementById("nin").value.replace(/\s+/g," ").trim().slice(0,20);
+ if(!canVote||!db||!uid||!v)return;
+ myName=v;saveChat();
+}
+function saveChat(keep){
+ var found=false;
+ chatDocs.forEach(function(d){if(d.uid===uid){d.msgs=myMsgs;d.name=myName;d.likes=myLikes;found=true}});
+ if(!found)chatDocs.push({uid:uid,name:myName,msgs:myMsgs,likes:myLikes});
+ renderChat(!keep);
+ db.doc("chat/"+uid).set({uid:uid,name:myName,msgs:myMsgs,likes:myLikes}).catch(function(){setCmsg("Couldn’t send. Try again.")});
+}
+function sendMsg(){
+ var inp=document.getElementById("cin"),v=inp.value.trim();
+ if(!v||!canVote||!db||!uid||!myName)return;
+ var now=Date.now();
+ if(now-lastSend<3000){setCmsg("Slow down a little.");return}
+ lastSend=now;
+ var nm0={i:now.toString(36)+Math.random().toString(36).slice(2,6),m:thread,x:v.slice(0,300),t:now};if(replyTo)nm0.p=replyTo.i;myMsgs.push(nm0);
+ if(myMsgs.length>200)myMsgs=myMsgs.slice(-200);
+ inp.value="";setCmsg("");replyTo=null;showRbar();saveChat();
+}
+function delMsg(i){myMsgs=myMsgs.filter(function(x){return x.i!==i});saveChat()}
+function wire(){
+ document.getElementById("tR").onclick=function(){showView("rate")};
+ document.getElementById("tC").onclick=function(){showView("chat")};
+ document.getElementById("csend").onclick=sendMsg;
+ document.getElementById("njoin").onclick=joinName;
+ document.getElementById("rx").onclick=function(){replyTo=null;showRbar()};
+ document.getElementById("nin").addEventListener("keydown",function(e){if(e.key==="Enter")joinName()});
+ document.getElementById("cin").addEventListener("keydown",function(e){if(e.key==="Enter")sendMsg()});
+ if(location.hash==="#chat")showView("chat");
+}
+var TEAMS=[["AVL","Aston Villa"],["MCI","Man City"],["NEW","Newcastle"],["BRE","Brentford"],["TOT","Spurs"],["NFO","Nottingham Forest"],["FUL","Fulham"],["MUN","Man United"],["SUN","Sunderland"],["IPS","Ipswich"],["HUL","Hull City"],["ARS","Arsenal"],["BRI","Brighton"],["EVE","Everton"],["CRY","Crystal Palace"],["COV","Coventry"],["LEE","Leeds"],["LFC","Liverpool"],["BOU","Bournemouth"],["BRU","Club Brugge"],["FEN","Fenerbahçe"],["VIK","Viking"],["BAR","Barcelona"],["GAL","Galatasaray"],["PSG","PSG"],["BVB","Dortmund"],["SLA","Slavia Prague"]];
+var OC={"mci":"MCI","new":"NEW","bre":"BRE","tot":"TOT","nfo":"NFO","hul":"HUL","ars":"ARS","bri":"BRI","vik":"VIK","fen":"FEN"};
+var NC={"Aston Villa":"AVL","Man City":"MCI","Newcastle":"NEW","Brentford":"BRE","Spurs":"TOT","Nottingham Forest":"NFO","Hull City":"HUL","Arsenal":"ARS","Brighton":"BRI","Viking":"VIK","Fenerbahçe":"FEN"};
+var FXC=["FUL","MUN","SUN","IPS"];
+var logos={},assetsNs=null,isEd=false;
+function lg(c){var id=logos[c];return id&&/^[0-9a-f]{32}$/.test(id)?'<img class="lg" src="/_blob/'+id+'" alt="" loading="lazy">':""}
+function buildLogos(){
+ var box=document.getElementById("logoAdmin");
+ if(!isEd||!assetsNs||!db){box.hidden=true;return}
+ box.hidden=false;
+ var g=document.getElementById("lgrid");g.innerHTML="";
+ TEAMS.forEach(function(t){
+  var c=el("div","lc",(lg(t[0])||'<div class="ph0"></div>')+"<div>"+t[1]+"</div>");
+  var lab=document.createElement("label");lab.textContent=logos[t[0]]?"Replace":"Upload";
+  var inp=document.createElement("input");inp.type="file";inp.accept="image/png,image/jpeg,image/webp,image/svg+xml";
+  inp.onchange=function(){upLogo(t[0],inp.files&&inp.files[0])};
+  lab.appendChild(inp);c.appendChild(lab);g.appendChild(c)});
+}
+async function upLogo(code,file){
+ var m=document.getElementById("lmsg");
+ if(!file)return;
+ try{
+  m.textContent="Uploading…";
+  var r=await assetsNs.upload(file);
+  var old=logos[code];
+  await db.doc("teams/"+code).set({c:code,a:r.id});
+  if(old&&old!==r.id){try{await assetsNs.delete(old)}catch(e){}}
+  m.textContent="Saved.";
+ }catch(e){m.textContent="Couldn’t upload that file. Try a PNG, JPG, WebP or SVG under 2 MB."}
+}
+var pics={};
+function pk(n){return n.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
+function phHtml(n){var id=pics[pk(n)];return id&&/^[0-9a-f]{32}$/.test(id)?'<img class="pimg" src="/_blob/'+id+'" alt="">':SIL}
+async function upPhoto(n,file){
+ if(!file)return;
+ try{
+  msg="Uploading photo…";render();
+  var r=await assetsNs.upload(file),old=pics[pk(n)];
+  await db.doc("players/"+pk(n)).set({k:pk(n),a:r.id});
+  if(old&&old!==r.id){try{await assetsNs.delete(old)}catch(e){}}
+  msg="";render();
+ }catch(e){msg="Couldn’t upload that photo. Try a PNG, JPG or WebP under 2 MB.";render()}
+}
+var FF="ALL";
+var F=[
+["2026-08-23","2:00pm","BRI","Brighton","A","PL","0–4"],
+["2026-08-31","8:00pm","ARS","Arsenal","H","PL","0–1"],
+["2026-09-05","5:30pm","HUL","Hull City","A","PL","0–0"],
+["2026-09-08","5:45pm","BRU","Club Brugge","A","UCL","3–2"],
+["2026-09-12","3:00pm","NFO","Nottingham Forest","H","PL","1–2"],
+["2026-09-19","12:30pm","TOT","Spurs","A","PL","3–2"],
+["2026-10-10","3:00pm","BRE","Brentford","H","PL","2–2"],
+["2026-10-14","8:00pm","FEN","Fenerbahçe","H","UCL","6–0"],
+["2026-10-17","5:30pm","NEW","Newcastle","A","PL","1–0"],
+["2026-10-21","8:00pm","VIK","Viking","H","UCL","3–1"],
+["2026-10-24","12:30pm","MCI","Man City","H","PL","2–1"],
+["2026-10-31","8:00pm","FUL","Fulham","H","PL"],
+["2026-11-03","8:00pm","BAR","Barcelona","A","UCL"],
+["2026-11-08","4:30pm","MUN","Man United","A","PL"],
+["2026-11-21","3:00pm","SUN","Sunderland","H","PL"],
+["2026-11-24","5:45pm","GAL","Galatasaray","A","UCL"],
+["2026-11-28","5:30pm","IPS","Ipswich","A","PL"],
+["2026-12-02","8:15pm","EVE","Everton","H","PL"],
+["2026-12-05","3:00pm","CRY","Crystal Palace","H","PL"],
+["2026-12-08","8:00pm","PSG","PSG","H","UCL"],
+["2026-12-13","4:30pm","COV","Coventry","A","PL"],
+["2026-12-26","12:30pm","LEE","Leeds","H","PL"],
+["2026-12-30","8:15pm","LFC","Liverpool","H","PL"],
+["2027-01-02","5:30pm","BOU","Bournemouth","A","PL"],
+["2027-01-19","8:00pm","BVB","Dortmund","H","UCL"],
+["2027-01-27","8:00pm","SLA","Slavia Prague","A","UCL"]
+];
+function fdate(iso){var d=new Date(iso+"T12:00:00"),s=d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});return iso.slice(0,4)==="2026"?s:s+" "+iso.slice(0,4)}
+function buildFix(f){
+ var bar=document.getElementById("fxf");bar.innerHTML="";
+ [["ALL","All"],["PL","Premier League"],["UCL","Champions League"]].forEach(function(o){
+  var b=el("button",FF===o[0]?"on":"",o[1]);b.onclick=function(){FF=o[0];buildFix(f)};bar.appendChild(b)});
+ var list=F.filter(function(x){return FF==="ALL"||x[5]===FF});
+ var up=list.filter(function(x){return !x[6]}).sort(function(a,b){return a[0]<b[0]?-1:a[0]>b[0]?1:0});
+ var rs=list.filter(function(x){return x[6]}).sort(function(a,b){return a[0]<b[0]?1:a[0]>b[0]?-1:0});
+ f.innerHTML="";
+ function sec(t,arr){
+  if(!arr.length)return;
+  f.appendChild(el("div","fh",t));
+  arr.forEach(function(x){
+   var res="";
+   if(x[6]){var p=x[6].split("–"),a=+p[0],b=+p[1];res=a>b?"W":a<b?"L":"D"}
+   f.appendChild(el("div","fr","<div>"+fdate(x[0])+"<small>"+x[1]+"</small></div><div>"+lg(x[2])+"v "+x[3]+" ("+x[4]+")<span class=\"cp"+(x[5]==="UCL"?" u":"")+"\">"+x[5]+"</span></div>"+(x[6]?"<span class=\"rs "+res+"\">"+x[6]+"</span>":"<span></span>")))});
+ }
+ sec("Upcoming",up);sec("Results",rs);
+}
+function fx(){
+ var f=document.getElementById("fx");f.innerHTML="";
+ buildFix(f);
+}
+async function init(){
+ try{
+  if(typeof claude==="undefined"||!claude.use){msg="Voting and chat are not switched on in this version yet.";return}
+  var user=await claude.use("user");
+  db=await claude.use("db");
+  if(!user||!db){msg="Sign in to claude.ai to vote and see everyone’s votes.";return}
+  uid=await user.id();userNs=user;try{assetsNs=await claude.use("assets");isEd=await user.canEdit()}catch(e){}
+  var cw=null;try{cw=user.can("data.write");if(cw&&cw.then)cw=await cw}catch(e){}
+  canVote=!!uid&&cw!==false;
+  if(!canVote)msg="You have view-only access, so you can see votes but not vote.";
+  document.getElementById("cin").disabled=!canVote;document.getElementById("csend").disabled=!canVote;
+  if(!canVote)setCmsg("You have view-only access, so you can read the chat but not post.");
+  db.collection("votes").onSnapshot(function(s){
+   motm=[];votes=s.docs.map(function(d){var x=d.data()||{},r=norm(x.ratings);if(x.uid===uid){mine=r;mineM=x.motm||{}}motm.push(x.motm||{});return r});
+   render();
+  },function(){msg="Couldn’t load votes.";render()});
+  db.collection("chat").onSnapshot(function(s){
+   chatDocs=s.docs.map(function(d){return d.data()||{}});
+   chatDocs.forEach(function(d){if(d.uid===uid){if(typeof d.name==="string")myName=d.name.slice(0,20);if(Array.isArray(d.likes))myLikes=d.likes.filter(function(x){return typeof x==="string"});if(Array.isArray(d.msgs))myMsgs=d.msgs.filter(function(x){return x&&typeof x.x==="string"})}});
+   if(view==="chat")renderChat(false);
+  },function(){setCmsg("Couldn’t load the chat.")});
+  db.collection("teams").onSnapshot(function(s){
+   logos={};s.docs.forEach(function(d){var x=d.data()||{};if(typeof x.c==="string"&&typeof x.a==="string")logos[x.c]=x.a});
+   render();fx();buildLogos();
+  },function(){});
+  db.collection("players").onSnapshot(function(s){
+   pics={};s.docs.forEach(function(d){var x=d.data()||{};if(typeof x.k==="string"&&typeof x.a==="string")pics[x.k]=x.a});
+   render();
+  },function(){});
+ }catch(e){msg="Voting isn’t available right now."}
+}
+fx();render();
+wire();init().then(render);
+</script>
+</body>
+</html>
