@@ -476,6 +476,7 @@ var F=[
 ["2026-12-05","3:00pm","CRY","Crystal Palace","H","PL"],
 ["2026-12-08","8:00pm","PSG","PSG","H","UCL"],
 ["2026-12-13","4:30pm","COV","Coventry","A","PL"],
+["2026-12-21","8:00pm","CFC","Chelsea","A","PL"],
 ["2026-12-26","12:30pm","LEE","Leeds","H","PL"],
 ["2026-12-30","8:15pm","LFC","Liverpool","H","PL"],
 ["2027-01-02","5:30pm","BOU","Bournemouth","A","PL"],
@@ -483,7 +484,10 @@ var F=[
 ["2027-01-27","8:00pm","SLA","Slavia Prague","A","UCL"]
 ];
 function fdate(iso){var d=new Date(iso+"T12:00:00"),s=d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});return iso.slice(0,4)==="2026"?s:s+" "+iso.slice(0,4)}
+var GW={};
+function gwInit(){var n=0;F.filter(function(x){return x[5]==="PL"}).sort(function(a,b){return a[0]<b[0]?-1:1}).forEach(function(x){GW[x[0]]=++n})}
 function buildFix(f){
+ if(!Object.keys(GW).length)gwInit();
  var bar=document.getElementById("fxf");bar.innerHTML="";
  [["ALL","All"],["PL","Premier League"],["UCL","Champions League"]].forEach(function(o){
   var b=el("button",FF===o[0]?"on":"",o[1]);b.onclick=function(){FF=o[0];buildFix(f)};bar.appendChild(b)});
@@ -497,7 +501,7 @@ function buildFix(f){
   arr.forEach(function(x){
    var res="";
    if(x[6]){var p=x[6].split("–"),a=+p[0],b=+p[1];res=a>b?"W":a<b?"L":"D"}
-   f.appendChild(el("div","fr","<div>"+fdate(x[0])+"<small>"+x[1]+"</small></div><div>"+lg(x[2])+"v "+x[3]+" ("+x[4]+")<span class=\"cp"+(x[5]==="UCL"?" u":"")+"\">"+x[5]+"</span></div>"+(x[6]?"<span class=\"rs "+res+"\">"+x[6]+"</span>":"<span></span>")))});
+   f.appendChild(el("div","fr","<div>"+fdate(x[0])+"<small>"+x[1]+"</small></div><div>"+lg(x[2])+"v "+x[3]+" ("+x[4]+")<span class=\"cp"+(x[5]==="UCL"?" u":"")+"\">"+x[5]+(x[5]==="PL"&&GW[x[0]]?" · GW"+GW[x[0]]:"")+"</span></div>"+(x[6]?"<span class=\"rs "+res+"\">"+x[6]+"</span>":"<span></span>")))});
  }
  sec("Upcoming",up);sec("Results",rs);
 }
