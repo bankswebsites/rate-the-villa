@@ -227,7 +227,7 @@ function render(){
  var ch=document.getElementById("chips");ch.innerHTML="";
  M.slice(0,5).forEach(function(m){
   var b=el("button","chip "+m.r+(m.c?" cl":"")+(m===cur?" on":""),lg(OC[m.id])+"v "+m.o+"<small>"+m.d.split(" ").slice(1).join(" ")+" · "+(m.ven==="H"?m.hs+"–"+m.as:m.as+"–"+m.hs)+"</small>");
-  b.onclick=function(){cur=m;render()};ch.appendChild(b)});
+  b.onclick=function(){cur=m;render();refresh()};ch.appendChild(b)});
  document.getElementById("mh").innerHTML="<b>"+lg(NC[cur.h])+cur.h+" "+cur.hs+"–"+cur.as+" "+cur.a+lg(NC[cur.a])+"</b><div>"+cur.d+" 2026 · "+(cur.c==="UCL"?"Champions League":"Premier League")+" · "+(cur.ven==="H"?"Home":"Away")+" · Villa possession, shots, on target: "+cur.st+"</div>";
  var mc=mcount(),list=names(),sum=0,c=0,voters=0,best=null,mt=0;
  voters=VC[cur.id]||0;
@@ -268,29 +268,33 @@ function renderTop3(mc){
   t.appendChild(el("div","tc r"+(i+1),x?"<em>#"+(i+1)+"</em><b>"+x.n+"</b><strong>"+x.m+"</strong><small>"+(x.m===1?"MOTM vote":"MOTM votes")+"</small>":"<em>#"+(i+1)+"</em><b>–</b><small>No votes yet</small>"));
  }
 }
-function refresh(){
- if(!db)return;
- Promise.all([db.from("rating_counts").select("*"),db.from("motm_counts").select("*"),db.from("voter_counts").select("*")]).then(function(r){
-  RC={};MC={};VC={};
-  (r[0].data||[]).forEach(function(x){((RC[x.match_id]=RC[x.match_id]||{})[x.player]=RC[x.match_id][x.player]||{})[x.rating]=x.n});
-  (r[1].data||[]).forEach(function(x){(MC[x.match_id]=MC[x.match_id]||{})[x.player]=x.n});
-  (r[2].data||[]).forEach(function(x){VC[x.match_id]=x.n});
-  render();
+var lastF={};
+function refresh(force){
+ if(!db||document.hidden)return;
+ var id=cur.id,now=Date.now();
+ if(!force&&lastF[id]&&now-lastF[id]<30000)return;
+ lastF[id]=now;
+ db.rpc("get_counts",{p_match:id}).then(function(r){
+  var d=r.data;if(!d)return;
+  var rc={},mc={};
+  (d.rc||[]).forEach(function(x){(rc[x.player]=rc[x.player]||{})[x.rating]=x.n});
+  (d.mc||[]).forEach(function(x){mc[x.player]=x.n});
+  RC[id]=rc;MC[id]=mc;VC[id]=d.vc||0;render();
  }).catch(function(){});
 }
 function fail(){msg="Couldn’t save your vote. Try again.";render()}
 function vote(n,r){
  if(!canVote||!db||!uid)return;
  mine[cur.id]=mine[cur.id]||{};mine[cur.id][n]=r;msg="";render();
- db.from("ratings").upsert({user_id:uid,match_id:cur.id,player:n,rating:r}).then(function(x){if(x.error)fail();else refresh()});
+ db.from("ratings").upsert({user_id:uid,match_id:cur.id,player:n,rating:r}).then(function(x){if(x.error)fail();else refresh(true)});
 }
 function voteMotm(n){
  if(!canVote||!db||!uid)return;
  var same=mineM[cur.id]===n;
  if(same){delete mineM[cur.id];msg="";render();
-  db.from("motm").delete().eq("user_id",uid).eq("match_id",cur.id).then(function(x){if(x.error)fail();else refresh()});}
+  db.from("motm").delete().eq("user_id",uid).eq("match_id",cur.id).then(function(x){if(x.error)fail();else refresh(true)});}
  else{mineM[cur.id]=n;msg="";render();
-  db.from("motm").upsert({user_id:uid,match_id:cur.id,player:n}).then(function(x){if(x.error)fail();else refresh()});}
+  db.from("motm").upsert({user_id:uid,match_id:cur.id,player:n}).then(function(x){if(x.error)fail();else refresh(true)});}
 }
 var T=[{id:"ful",l:"v Fulham · next match"}].concat(M.slice(0,5).map(function(m){return {id:m.id,l:"v "+m.o+" · "+m.d.split(" ").slice(1).join(" ")}}));
 var thread="ful",chatDocs=[],myMsgs=[],myName="",userNs=null,lastSend=0,view="rate",open={},replyTo=null,myLikes=[];
@@ -506,9 +510,13 @@ async function init(){
  try{
   db=supabase.createClient(SB_URL,SB_KEY);
  }catch(e){msg="Voting isn’t available right now.";db=null;return}
- try{db.from("team_logos").select("*").then(function(r){logos={};(r.data||[]).forEach(function(x){logos[x.code]=x.url});render();fx()})}catch(e){}
- try{db.from("player_photos").select("*").then(function(r){pics={};(r.data||[]).forEach(function(x){pics[x.slug]=x.url});render()})}catch(e){}
- refresh();setInterval(refresh,10000);
+ function cached(key,table,col,done){
+  try{var c=JSON.parse(localStorage.getItem(key)||"null");if(c&&Date.now()-c.t<3600000){done(c.d);return}}catch(e){}
+  db.from(table).select("*").then(function(r){var m={};(r.data||[]).forEach(function(x){m[x[col]]=x.url});try{localStorage.setItem(key,JSON.stringify({t:Date.now(),d:m}))}catch(e){}done(m)}).catch(function(){});
+ }
+ cached("rtv_logos","team_logos","code",function(m){logos=m;render();fx()});
+ cached("rtv_pics","player_photos","slug",function(m){pics=m;render()});
+ refresh(true);setInterval(function(){refresh()},45000);document.addEventListener("visibilitychange",function(){if(!document.hidden)refresh()});
  try{
   var ss=await db.auth.getSession(),sess=ss.data&&ss.data.session;
   if(!sess){var a=await db.auth.signInAnonymously();if(a.error)throw a.error;sess=a.data.session}
