@@ -415,7 +415,7 @@ var OC={"mci":"MCI","new":"NEW","bre":"BRE","tot":"TOT","nfo":"NFO","hul":"HUL",
 var NC={"Aston Villa":"AVL","Man City":"MCI","Newcastle":"NEW","Brentford":"BRE","Spurs":"TOT","Nottingham Forest":"NFO","Hull City":"HUL","Arsenal":"ARS","Brighton":"BRI","Viking":"VIK","Fenerbahçe":"FEN"};
 var FXC=["FUL","MUN","SUN","IPS"];
 var logos={},assetsNs=null,isEd=false;
-function lg(c){var u=logos[c];return u&&/^(https?:\/\/|(players|teams)\/[\w.-]+$)/.test(u)?'<img class="lg" src="'+u+'" alt="" loading="lazy">':""}
+function lg(c){if(c!=="AVL")return"";var u=logos[c];return u&&/^(https?:\/\/|(players|teams)\/[\w.-]+$)/.test(u)?'<img class="lg" src="'+u+'" alt="" loading="lazy">':""}
 function buildLogos(){
  var box=document.getElementById("logoAdmin");
  if(!isEd||!assetsNs||!db){box.hidden=true;return}
