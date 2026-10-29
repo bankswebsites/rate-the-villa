@@ -145,6 +145,8 @@ html{font-size:118%}
 .st{width:46px;height:46px;flex-basis:46px}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>#tC{display:none!important}</style>
 </head>
 <body>
 <main>
@@ -213,16 +215,13 @@ function norm(r){r=r||{};var k=Object.keys(r);if(k.length&&typeof r[k[0]]==="num
 function names(){return [].concat(cur.gk,cur.df,cur.mf,cur.fw,cur.bn||[])}
 var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK"};
 function posOf(n){if(cur.bn&&cur.bn.indexOf(n)>=0)return BPOS[n]||"MF";return cur.gk.indexOf(n)>=0?"GK":cur.df.indexOf(n)>=0?"DF":cur.mf.indexOf(n)>=0?"MF":"FW"}
+var RC={},MC={},VC={};
 function stats(n){
- var c=[0,0,0,0,0,0,0,0,0,0],t=0,s=0;
- votes.forEach(function(v){var r=v&&v[cur.id]&&v[cur.id][n];if(r>=1&&r<=10&&r%1===0){c[r-1]++;t++;s+=r}});
+ var c=[0,0,0,0,0,0,0,0,0,0],t=0,s=0,o=(RC[cur.id]||{})[n]||{};
+ for(var r=1;r<=10;r++){c[r-1]=o[r]||0;t+=c[r-1];s+=r*c[r-1]}
  return {c:c,t:t,avg:t?s/t:null};
 }
-function mcount(){
- var mc={};
- motm.forEach(function(m){var n=m&&m[cur.id];if(n)mc[n]=(mc[n]||0)+1});
- return mc;
-}
+function mcount(){return MC[cur.id]||{}}
 function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
 function render(){
  var ch=document.getElementById("chips");ch.innerHTML="";
@@ -231,7 +230,7 @@ function render(){
   b.onclick=function(){cur=m;render()};ch.appendChild(b)});
  document.getElementById("mh").innerHTML="<b>"+lg(NC[cur.h])+cur.h+" "+cur.hs+"–"+cur.as+" "+cur.a+lg(NC[cur.a])+"</b><div>"+cur.d+" 2026 · "+(cur.c==="UCL"?"Champions League":"Premier League")+" · "+(cur.ven==="H"?"Home":"Away")+" · Villa possession, shots, on target: "+cur.st+"</div>";
  var mc=mcount(),list=names(),sum=0,c=0,voters=0,best=null,mt=0;
- votes.forEach(function(v){if(v&&v[cur.id]&&Object.keys(v[cur.id]).length)voters++});
+ voters=VC[cur.id]||0;
  list.forEach(function(n){var s=stats(n);if(s.t){sum+=s.avg;c++}if(mc[n]){mt+=mc[n];if(best===null||mc[n]>mc[best])best=n}});
  var tie=best!==null&&list.filter(function(n){return mc[n]===mc[best]}).length>1;
  var av=c?(sum/c).toFixed(1)+" / 10":"–";document.querySelectorAll(".avgv").forEach(function(e){e.textContent=av});
@@ -245,7 +244,7 @@ function render(){
   if(cur.bn&&n===cur.bn[0])box.appendChild(el("h3","sh","Substitutes"));
   var card=el("div","card");
   var ph=el("div","ph",'<span class="bd">'+BD[posOf(n)]+'</span>'+phHtml(n));
-  if(isEd&&assetsNs&&db){var lab=document.createElement("label");lab.className="up";lab.textContent=pics[pk(n)]?"Change photo":"Add photo";var inp=document.createElement("input");inp.type="file";inp.accept="image/png,image/jpeg,image/webp";inp.onchange=function(){upPhoto(n,inp.files&&inp.files[0])};lab.appendChild(inp);ph.appendChild(lab)}
+  if(false){var lab=document.createElement("label");lab.className="up";lab.textContent=pics[pk(n)]?"Change photo":"Add photo";var inp=document.createElement("input");inp.type="file";inp.accept="image/png,image/jpeg,image/webp";inp.onchange=function(){upPhoto(n,inp.files&&inp.files[0])};lab.appendChild(inp);ph.appendChild(lab)}
   card.appendChild(ph);
   var rt=el("div","rt");rt.appendChild(el("h2","",n));
   var g=el("div","g");
@@ -269,17 +268,29 @@ function renderTop3(mc){
   t.appendChild(el("div","tc r"+(i+1),x?"<em>#"+(i+1)+"</em><b>"+x.n+"</b><strong>"+x.avg.toFixed(1)+"</strong><small>"+x.t+(x.t===1?" vote":" votes")+(x.m?" · "+x.m+" MOTM":"")+"</small>":"<em>#"+(i+1)+"</em><b>–</b><small>No votes yet</small>"));
  }
 }
-function save(){
- db.doc("votes/"+uid).set({uid:uid,ratings:mine,motm:mineM}).catch(function(){msg="Couldn’t save your vote. Try again.";render()});
+function refresh(){
+ if(!db)return;
+ Promise.all([db.from("rating_counts").select("*"),db.from("motm_counts").select("*"),db.from("voter_counts").select("*")]).then(function(r){
+  RC={};MC={};VC={};
+  (r[0].data||[]).forEach(function(x){((RC[x.match_id]=RC[x.match_id]||{})[x.player]=RC[x.match_id][x.player]||{})[x.rating]=x.n});
+  (r[1].data||[]).forEach(function(x){(MC[x.match_id]=MC[x.match_id]||{})[x.player]=x.n});
+  (r[2].data||[]).forEach(function(x){VC[x.match_id]=x.n});
+  render();
+ }).catch(function(){});
 }
+function fail(){msg="Couldn’t save your vote. Try again.";render()}
 function vote(n,r){
  if(!canVote||!db||!uid)return;
- mine[cur.id]=mine[cur.id]||{};mine[cur.id][n]=r;msg="";render();save();
+ mine[cur.id]=mine[cur.id]||{};mine[cur.id][n]=r;msg="";render();
+ db.from("ratings").upsert({user_id:uid,match_id:cur.id,player:n,rating:r}).then(function(x){if(x.error)fail();else refresh()});
 }
 function voteMotm(n){
  if(!canVote||!db||!uid)return;
- if(mineM[cur.id]===n)delete mineM[cur.id];else mineM[cur.id]=n;
- msg="";render();save();
+ var same=mineM[cur.id]===n;
+ if(same){delete mineM[cur.id];msg="";render();
+  db.from("motm").delete().eq("user_id",uid).eq("match_id",cur.id).then(function(x){if(x.error)fail();else refresh()});}
+ else{mineM[cur.id]=n;msg="";render();
+  db.from("motm").upsert({user_id:uid,match_id:cur.id,player:n}).then(function(x){if(x.error)fail();else refresh()});}
 }
 var T=[{id:"ful",l:"v Fulham · next match"}].concat(M.slice(0,5).map(function(m){return {id:m.id,l:"v "+m.o+" · "+m.d.split(" ").slice(1).join(" ")}}));
 var thread="ful",chatDocs=[],myMsgs=[],myName="",userNs=null,lastSend=0,view="rate",open={},replyTo=null,myLikes=[];
@@ -400,7 +411,7 @@ var OC={"mci":"MCI","new":"NEW","bre":"BRE","tot":"TOT","nfo":"NFO","hul":"HUL",
 var NC={"Aston Villa":"AVL","Man City":"MCI","Newcastle":"NEW","Brentford":"BRE","Spurs":"TOT","Nottingham Forest":"NFO","Hull City":"HUL","Arsenal":"ARS","Brighton":"BRI","Viking":"VIK","Fenerbahçe":"FEN"};
 var FXC=["FUL","MUN","SUN","IPS"];
 var logos={},assetsNs=null,isEd=false;
-function lg(c){var id=logos[c];return id&&/^[0-9a-f]{32}$/.test(id)?'<img class="lg" src="/_blob/'+id+'" alt="" loading="lazy">':""}
+function lg(c){var u=logos[c];return u&&/^https?:\/\//.test(u)?'<img class="lg" src="'+u+'" alt="" loading="lazy">':""}
 function buildLogos(){
  var box=document.getElementById("logoAdmin");
  if(!isEd||!assetsNs||!db){box.hidden=true;return}
@@ -427,7 +438,7 @@ async function upLogo(code,file){
 }
 var pics={};
 function pk(n){return n.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
-function phHtml(n){var id=pics[pk(n)];return id&&/^[0-9a-f]{32}$/.test(id)?'<img class="pimg" src="/_blob/'+id+'" alt="">':SIL}
+function phHtml(n){var u=pics[pk(n)];return u&&/^https?:\/\//.test(u)?'<img class="pimg" src="'+u+'" alt="">':SIL}
 async function upPhoto(n,file){
  if(!file)return;
  try{
@@ -491,35 +502,22 @@ function fx(){
  buildFix(f);
 }
 async function init(){
+ var SB_URL="https://lbngxflhhyeowpvmxncb.supabase.co",SB_KEY="sb_publishable_AsIOIy-mFPT7rfh6Ov2jUQ_3sxSoQok";
  try{
-  if(typeof claude==="undefined"||!claude.use){msg="Voting and chat are not switched on in this version yet.";return}
-  var user=await claude.use("user");
-  db=await claude.use("db");
-  if(!user||!db){msg="Sign in to claude.ai to vote and see everyone’s votes.";return}
-  uid=await user.id();userNs=user;try{assetsNs=await claude.use("assets");isEd=await user.canEdit()}catch(e){}
-  var cw=null;try{cw=user.can("data.write");if(cw&&cw.then)cw=await cw}catch(e){}
-  canVote=!!uid&&cw!==false;
-  if(!canVote)msg="You have view-only access, so you can see votes but not vote.";
-  document.getElementById("cin").disabled=!canVote;document.getElementById("csend").disabled=!canVote;
-  if(!canVote)setCmsg("You have view-only access, so you can read the chat but not post.");
-  db.collection("votes").onSnapshot(function(s){
-   motm=[];votes=s.docs.map(function(d){var x=d.data()||{},r=norm(x.ratings);if(x.uid===uid){mine=r;mineM=x.motm||{}}motm.push(x.motm||{});return r});
-   render();
-  },function(){msg="Couldn’t load votes.";render()});
-  db.collection("chat").onSnapshot(function(s){
-   chatDocs=s.docs.map(function(d){return d.data()||{}});
-   chatDocs.forEach(function(d){if(d.uid===uid){if(typeof d.name==="string")myName=d.name.slice(0,20);if(Array.isArray(d.likes))myLikes=d.likes.filter(function(x){return typeof x==="string"});if(Array.isArray(d.msgs))myMsgs=d.msgs.filter(function(x){return x&&typeof x.x==="string"})}});
-   if(view==="chat")renderChat(false);
-  },function(){setCmsg("Couldn’t load the chat.")});
-  db.collection("teams").onSnapshot(function(s){
-   logos={};s.docs.forEach(function(d){var x=d.data()||{};if(typeof x.c==="string"&&typeof x.a==="string")logos[x.c]=x.a});
-   render();fx();buildLogos();
-  },function(){});
-  db.collection("players").onSnapshot(function(s){
-   pics={};s.docs.forEach(function(d){var x=d.data()||{};if(typeof x.k==="string"&&typeof x.a==="string")pics[x.k]=x.a});
-   render();
-  },function(){});
- }catch(e){msg="Voting isn’t available right now."}
+  db=supabase.createClient(SB_URL,SB_KEY);
+ }catch(e){msg="Voting isn’t available right now.";db=null;return}
+ try{db.from("team_logos").select("*").then(function(r){logos={};(r.data||[]).forEach(function(x){logos[x.code]=x.url});render();fx()})}catch(e){}
+ try{db.from("player_photos").select("*").then(function(r){pics={};(r.data||[]).forEach(function(x){pics[x.slug]=x.url});render()})}catch(e){}
+ refresh();setInterval(refresh,10000);
+ try{
+  var ss=await db.auth.getSession(),sess=ss.data&&ss.data.session;
+  if(!sess){var a=await db.auth.signInAnonymously();if(a.error)throw a.error;sess=a.data.session}
+  uid=sess.user.id;canVote=true;
+  var q=await Promise.all([db.from("ratings").select("match_id,player,rating"),db.from("motm").select("match_id,player")]);
+  (q[0].data||[]).forEach(function(x){(mine[x.match_id]=mine[x.match_id]||{})[x.player]=x.rating});
+  (q[1].data||[]).forEach(function(x){mineM[x.match_id]=x.player});
+ }catch(e){canVote=false;msg="You can see everyone’s votes. Voting is being switched on — check back soon."}
+ render();
 }
 fx();render();
 wire();init().then(render);
