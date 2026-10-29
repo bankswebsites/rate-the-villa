@@ -11,6 +11,11 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15101a;--fg:#f2eef4;--mut:#a79fb0;--card:#241b2c;--line:#3a2f45;--claret:#b8346f}}
 :root[data-theme="dark"]{--bg:#15101a;--fg:#f2eef4;--mut:#a79fb0;--card:#241b2c;--line:#3a2f45;--claret:#b8346f}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
+/* photo background: always use the dark palette so text stays readable */
+:root,:root[data-theme="light"],:root[data-theme="dark"]{--bg:#15101a;--fg:#f2eef4;--mut:#b4acbd;--card:rgba(36,27,44,.9);--line:rgba(255,255,255,.16);--claret:#b8346f;color-scheme:dark}
+body::before{content:"";position:fixed;inset:-6%;z-index:-1;pointer-events:none;background:linear-gradient(rgba(21,16,26,.55),rgba(21,16,26,.82)),url(villa-bg.jpg) center/cover no-repeat;animation:bgzoom 40s ease-in-out infinite alternate;will-change:transform}
+@keyframes bgzoom{0%{transform:scale(1) translate3d(0,0,0)}100%{transform:scale(1.08) translate3d(-1.5%,1%,0)}}
+@media(prefers-reduced-motion:reduce){body::before{animation:none}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
 main{max-width:1120px;margin:0 auto;padding:20px 16px 40px}
