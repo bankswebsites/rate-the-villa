@@ -262,10 +262,10 @@ function render(){
 }
 function renderTop3(mc){
  var t=document.getElementById("top3");t.innerHTML="";
- var rk=names().map(function(n){var s=stats(n);return {n:n,avg:s.avg,t:s.t,m:mc[n]||0}}).filter(function(x){return x.t>0}).sort(function(a,b){return b.avg-a.avg||b.t-a.t||b.m-a.m}).slice(0,3);
+ var rk=names().map(function(n){return {n:n,m:mc[n]||0}}).filter(function(x){return x.m>0}).sort(function(a,b){return b.m-a.m}).slice(0,3);
  for(var i=0;i<3;i++){
   var x=rk[i];
-  t.appendChild(el("div","tc r"+(i+1),x?"<em>#"+(i+1)+"</em><b>"+x.n+"</b><strong>"+x.avg.toFixed(1)+"</strong><small>"+x.t+(x.t===1?" vote":" votes")+(x.m?" · "+x.m+" MOTM":"")+"</small>":"<em>#"+(i+1)+"</em><b>–</b><small>No votes yet</small>"));
+  t.appendChild(el("div","tc r"+(i+1),x?"<em>#"+(i+1)+"</em><b>"+x.n+"</b><strong>"+x.m+"</strong><small>"+(x.m===1?"MOTM vote":"MOTM votes")+"</small>":"<em>#"+(i+1)+"</em><b>–</b><small>No votes yet</small>"));
  }
 }
 function refresh(){
