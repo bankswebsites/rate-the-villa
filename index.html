@@ -257,7 +257,7 @@ function render(){
   var st=el("button","st"+(isM?" on":""),STAR(isM));st.disabled=!canVote;st.setAttribute("aria-label","Man of the Match: "+n);
   st.onclick=function(){voteMotm(n)};
   ft.appendChild(st);
-  ft.appendChild(el("span","",(s.t?s.avg.toFixed(1)+" avg · "+s.t+(s.t===1?" vote":" votes"):"No votes yet")+(mc[n]?" · "+mc[n]+" MOTM":"")+(my?" · You: "+my:"")));
+  ft.appendChild(el("span","",(s.t?s.avg.toFixed(1)+" avg · "+s.t+(s.t===1?" vote":" votes"):"No votes yet")+(mc[n]?" · "+mc[n]+" MOTM":"")+(my?" · You voted: "+my:"")));
   rt.appendChild(ft);card.appendChild(rt);box.appendChild(card)});
 }
 function renderTop3(mc){
