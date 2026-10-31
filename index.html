@@ -465,7 +465,7 @@ function myList(){
 }
 function shareText(){
  var l=myList(),m=mineM[cur.id];
- var t="My ratings v "+cur.o+" ("+(cur.ven==="H"?cur.hs+"–"+cur.as:cur.as+"–"+cur.hs)+")\n\n"+l.map(function(x){return x.n+" "+x.r}).join("\n");
+ var t="My ratings v "+cur.o+" ("+(cur.ven==="H"?cur.hs+"–"+cur.as:cur.as+"–"+cur.hs)+")\n\n"+l.map(function(x){var o=cur.on&&cur.on[x.n]?" (on "+cur.on[x.n][0]+")":cur.off&&cur.off[x.n]?" (off "+cur.off[x.n][0]+")":"";return x.n+" "+x.r+o}).join("\n");
  if(m)t+="\n\nMan of the Match: "+m;
  return t+"\n\nRate the Villa: ratethevilla.com";
 }
@@ -487,6 +487,16 @@ function drawShare(logo){
   var y=top+i*rowH;
   c.fillStyle="rgba(255,255,255,.08)";rr(c,60,y,W-120,rowH-10,16);c.fill();
   c.fillStyle="#fff";c.font="600 38px system-ui,sans-serif";c.textBaseline="middle";c.fillText(x.n+(m===x.n?"  ★":""),88,y+(rowH-10)/2);
+  var sw=cur.on&&cur.on[x.n]?["u",cur.on[x.n][0]]:cur.off&&cur.off[x.n]?["d",cur.off[x.n][0]]:null;
+  if(sw){
+   var nw=c.measureText(x.n+(m===x.n?"  ★":"")).width,cx=88+nw+34,cy=y+(rowH-10)/2;
+   c.fillStyle=sw[0]==="u"?"#1fb86a":"#e0405a";c.beginPath();c.arc(cx,cy,17,0,6.2832);c.fill();
+   c.strokeStyle="#fff";c.lineWidth=3.5;c.lineCap="round";c.lineJoin="round";c.beginPath();
+   if(sw[0]==="u"){c.moveTo(cx,cy+8);c.lineTo(cx,cy-8);c.moveTo(cx-6,cy-2);c.lineTo(cx,cy-8);c.lineTo(cx+6,cy-2)}
+   else{c.moveTo(cx,cy-8);c.lineTo(cx,cy+8);c.moveTo(cx-6,cy+2);c.lineTo(cx,cy+8);c.lineTo(cx+6,cy+2)}
+   c.stroke();
+   c.fillStyle="#c9b8c4";c.font="500 30px system-ui,sans-serif";c.fillText(sw[1],cx+30,cy);
+  }
   c.fillStyle=rcol(x.r);rr(c,W-60-130,y+6,110,rowH-22,14);c.fill();
   c.fillStyle="#15101a";c.font="800 38px system-ui,sans-serif";c.textAlign="center";c.fillText(String(x.r),W-60-75,y+(rowH-10)/2);c.textAlign="left";
  });
