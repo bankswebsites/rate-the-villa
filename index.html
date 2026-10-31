@@ -126,6 +126,8 @@ section[hidden]{display:none}
 .ar{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%}
 .ar.u{background:#1fb86a}.ar.d{background:#e0405a}
 .shr{margin:-4px 0 12px}
+.shr2{display:none}
+@media(min-width:900px){.shr{display:none}.shr2{display:block;margin-top:12px}#shareBtn2{display:flex;align-items:center;justify-content:center;width:100%;padding:12px;border-radius:12px;border:0;background:var(--claret);color:#fff;font:inherit;font-weight:700;cursor:pointer}}
 .shr button,.shm button{font:inherit;font-weight:700;cursor:pointer}
 #shareBtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:12px;border:0;background:var(--claret);color:#fff}
 .shm{position:fixed;inset:0;background:rgba(10,6,14,.82);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px}
@@ -210,7 +212,8 @@ html{font-size:118%}
 <div class="top3" id="top3"></div>
 <div class="team"><span>Team average</span><b class="avgv">–</b></div>
 <p class="note" id="voters"></p>
-<p class="note" id="msg"></p></aside>
+<p class="note" id="msg"></p>
+<div class="shr2" id="shr2" hidden><button id="shareBtn2" type="button">Share my ratings</button></div></aside>
 <div id="cards"></div>
 </div>
 <h3 style="margin-top:22px">Fixtures</h3>
@@ -524,7 +527,7 @@ function shareBlob(cb){
 }
 function wireShare(){
  var n=document.getElementById("shn");
- document.getElementById("shareBtn").onclick=openShare;
+ document.getElementById("shareBtn").onclick=openShare;document.getElementById("shareBtn2").onclick=openShare;
  document.getElementById("shX").onclick=function(){document.getElementById("shm").hidden=true};
  document.getElementById("shm").onclick=function(e){if(e.target===this)this.hidden=true};
  document.getElementById("shCopy").onclick=function(){
@@ -548,7 +551,7 @@ function wireShare(){
   })
  };
 }
-function shareBtnState(){var s=document.getElementById("shr");if(s)s.hidden=!myList().length}
+function shareBtnState(){var h=!myList().length;["shr","shr2"].forEach(function(i){var s=document.getElementById(i);if(s)s.hidden=h})}
 function wire(){
  wireShare();
  document.getElementById("tR").onclick=function(){showView("rate")};
