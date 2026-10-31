@@ -115,7 +115,10 @@ section[hidden]{display:none}
 .fxmore{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-weight:600;cursor:pointer}
 .fxmore span{font-size:.75rem;color:var(--claret)}
 .lv{color:#fff;background:#d93a3a;border-radius:6px;padding:1px 6px;font-weight:700;font-size:.7rem;text-transform:uppercase}
-.subn{color:var(--mut);font-size:.78rem;margin:-2px 0 6px}
+.subn{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:.8rem;margin:-2px 0 6px}
+.subn b{color:var(--fg);font-weight:700}
+.ar{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%}
+.ar.u{background:#1fb86a}.ar.d{background:#e0405a}
 .sbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .sb{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 4px;text-align:center}
 .sb small{display:block;color:var(--mut);font-size:.6rem;text-transform:uppercase;letter-spacing:.04em}
@@ -209,7 +212,7 @@ html{font-size:118%}
 <script>
 var M=[
 {id:"ful",d:"Sat 31 Oct",h:"Aston Villa",a:"Fulham",hs:1,as:1,o:"Fulham",ven:"H",r:"D",live:1,st:"43% · 13–15 · 5–4",
- gk:["Suzuki"],df:["Cash","Lindelöf","Torres","Maatsen"],mf:["Kamara","Goretzka","McGinn","Manzambi"],fw:["Alysson","Jackson"],bn:["Buendia","Gomes","Mbaye","Barkley","Garnacho","Harwood-Bellis","Mings","Madjo","Bizot"],on:{"Buendia":"On 66′ for Alysson","Gomes":"On 66′ for Manzambi","Mbaye":"On 66′ for Goretzka","Barkley":"On 79′ for Kamara","Garnacho":"On 87′ for McGinn"}},
+ gk:["Suzuki"],df:["Cash","Lindelöf","Torres","Maatsen"],mf:["Kamara","Goretzka","McGinn","Manzambi"],fw:["Alysson","Jackson"],bn:["Buendia","Gomes","Mbaye","Barkley","Garnacho","Harwood-Bellis","Mings","Madjo","Bizot"],on:{"Buendia":["66′","Alysson"],"Gomes":["66′","Manzambi"],"Mbaye":["66′","Goretzka"],"Barkley":["79′","Kamara"],"Garnacho":["87′","McGinn"]},off:{"Alysson":["66′","Buendia"],"Manzambi":["66′","Gomes"],"Goretzka":["66′","Mbaye"],"Kamara":["79′","Barkley"],"McGinn":["87′","Garnacho"]}},
 {id:"mci",d:"Sat 24 Oct",h:"Aston Villa",a:"Man City",hs:2,as:1,o:"Man City",ven:"H",r:"W",st:"37% · 8–15 · 2–7",
  gk:["Suzuki"],df:["Maatsen","Torres","Lindelöf","Cash"],mf:["McGinn","Manzambi","Gomes","Kamara"],fw:["Alysson","Jackson"],bn:["Hemmings","Mbaye","Madjo","Barkley"]},
 {id:"vik",d:"Wed 21 Oct",h:"Aston Villa",a:"Viking",hs:3,as:1,o:"Viking",ven:"H",r:"W",c:"UCL",st:"54% · 19–10 · 9–4",
@@ -284,7 +287,8 @@ function render(){
   var ph=el("div","ph",'<span class="bd">'+BD[posOf(n)]+'</span>'+phHtml(n));
   if(false){var lab=document.createElement("label");lab.className="up";lab.textContent=pics[pk(n)]?"Change photo":"Add photo";var inp=document.createElement("input");inp.type="file";inp.accept="image/png,image/jpeg,image/webp";inp.onchange=function(){upPhoto(n,inp.files&&inp.files[0])};lab.appendChild(inp);ph.appendChild(lab)}
   card.appendChild(ph);
-  var rt=el("div","rt");rt.appendChild(el("h2","",n));if(cur.on&&cur.on[n])rt.appendChild(el("div","subn",cur.on[n]));
+  var rt=el("div","rt");rt.appendChild(el("h2","",n));var sw=cur.on&&cur.on[n]?["u",cur.on[n]]:cur.off&&cur.off[n]?["d",cur.off[n]]:null;
+  if(sw)rt.appendChild(el("div","subn",'<i class="ar '+sw[0]+'"><svg viewBox="0 0 12 12" width="11" height="11"><path d="'+(sw[0]==="u"?"M6 10V2M2.5 5.5 6 2l3.5 3.5":"M6 2v8M2.5 6.5 6 10l3.5-3.5")+'" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b>'+sw[1][0]+'</b>'+(sw[0]==="u"?"for ":"for ")+sw[1][1]));
   var g=el("div","g");
   for(var i=1;i<=10;i++)(function(i){
    var b=el("button",my===i?"on":"","<span>"+i+"</span><small>"+s.c[i-1]+"</small>");
