@@ -105,6 +105,7 @@ section[hidden]{display:none}
 .chip .lg{display:block;margin:0 auto 3px;width:28px;height:28px}
 .fxmore{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-weight:600;cursor:pointer}
 .fxmore span{font-size:.75rem;color:var(--claret)}
+.lv{color:#fff;background:#d93a3a;border-radius:6px;padding:1px 6px;font-weight:700;font-size:.7rem;text-transform:uppercase}
 .sbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .sb{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 4px;text-align:center}
 .sb small{display:block;color:var(--mut);font-size:.6rem;text-transform:uppercase;letter-spacing:.04em}
@@ -198,6 +199,8 @@ html{font-size:118%}
 </main>
 <script>
 var M=[
+{id:"ful",d:"Sat 31 Oct",h:"Aston Villa",a:"Fulham",hs:1,as:0,o:"Fulham",ven:"H",r:"W",live:1,st:"47% · 8–6 · 4–1",
+ gk:["Suzuki"],df:["Cash","Lindelöf","Torres","Maatsen"],mf:["Kamara","Goretzka","McGinn","Manzambi"],fw:["Alysson","Jackson"],bn:["Madjo","Mbaye","Harwood-Bellis","Gomes"]},
 {id:"mci",d:"Sat 24 Oct",h:"Aston Villa",a:"Man City",hs:2,as:1,o:"Man City",ven:"H",r:"W",st:"37% · 8–15 · 2–7",
  gk:["Suzuki"],df:["Maatsen","Torres","Lindelöf","Cash"],mf:["McGinn","Manzambi","Gomes","Kamara"],fw:["Alysson","Jackson"],bn:["Hemmings","Mbaye","Madjo","Barkley"]},
 {id:"vik",d:"Wed 21 Oct",h:"Aston Villa",a:"Viking",hs:3,as:1,o:"Viking",ven:"H",r:"W",c:"UCL",st:"54% · 19–10 · 9–4",
@@ -226,7 +229,7 @@ var STAR=function(on){return '<svg viewBox="0 0 24 24" width="22" height="22" ar
 var cur=M[0],db=null,uid=null,canVote=false,msg="",votes=[],mine={},motm=[],mineM={};
 function norm(r){r=r||{};var k=Object.keys(r);if(k.length&&typeof r[k[0]]==="number")return {mci:r};return r}
 function names(){return [].concat(cur.gk,cur.df,cur.mf,cur.fw,cur.bn||[])}
-var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK"};
+var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK","Harwood-Bellis":"DF"};
 function posOf(n){if(cur.bn&&cur.bn.indexOf(n)>=0)return BPOS[n]||"MF";return cur.gk.indexOf(n)>=0?"GK":cur.df.indexOf(n)>=0?"DF":cur.mf.indexOf(n)>=0?"MF":"FW"}
 var RC={},MC={},VC={};
 function stats(n){
@@ -254,7 +257,7 @@ function render(){
  M.slice(0,5).forEach(function(m){
   var b=el("button","chip "+m.r+(m.c?" cl":"")+(m===cur?" on":""),lg(OC[m.id])+"v "+m.o+"<small>"+m.d.split(" ").slice(1).join(" ")+" · "+(m.ven==="H"?m.hs+"–"+m.as:m.as+"–"+m.hs)+"</small>"+(gwOf(m)?"<small>"+gwOf(m).replace(" · ","")+"</small>":""));
   b.onclick=function(){cur=m;render();refresh()};ch.appendChild(b)});
- document.getElementById("mh").innerHTML="<b>"+lg(NC[cur.h])+cur.h+" "+cur.hs+"–"+cur.as+" "+cur.a+lg(NC[cur.a])+"</b><div>"+cur.d+" 2026 · "+(cur.c==="UCL"?"Champions League":"Premier League"+gwOf(cur))+" · "+(cur.ven==="H"?"Home":"Away")+"</div>"+statBoxes();
+ document.getElementById("mh").innerHTML="<b>"+lg(NC[cur.h])+cur.h+" "+cur.hs+"–"+cur.as+" "+cur.a+lg(NC[cur.a])+"</b><div>"+cur.d+" 2026 · "+(cur.c==="UCL"?"Champions League":"Premier League"+gwOf(cur))+" · "+(cur.ven==="H"?"Home":"Away")+(cur.live?" · <span class=\"lv\">Live</span>":"")+"</div>"+statBoxes();
  var mc=mcount(),list=names(),sum=0,c=0,voters=0,best=null,mt=0;
  voters=VC[cur.id]||0;
  list.forEach(function(n){var s=stats(n);if(s.t){sum+=s.avg;c++}if(mc[n]){mt+=mc[n];if(best===null||mc[n]>mc[best])best=n}});
@@ -437,8 +440,8 @@ function wire(){
  if(location.hash==="#chat")showView("chat");
 }
 var TEAMS=[["AVL","Aston Villa"],["MCI","Man City"],["NEW","Newcastle"],["BRE","Brentford"],["TOT","Spurs"],["NFO","Nottingham Forest"],["FUL","Fulham"],["MUN","Man United"],["SUN","Sunderland"],["IPS","Ipswich"],["HUL","Hull City"],["ARS","Arsenal"],["BRI","Brighton"],["EVE","Everton"],["CRY","Crystal Palace"],["COV","Coventry"],["LEE","Leeds"],["LFC","Liverpool"],["BOU","Bournemouth"],["BRU","Club Brugge"],["FEN","Fenerbahçe"],["VIK","Viking"],["BAR","Barcelona"],["GAL","Galatasaray"],["PSG","PSG"],["BVB","Dortmund"],["SLA","Slavia Prague"]];
-var OC={"mci":"MCI","new":"NEW","bre":"BRE","tot":"TOT","nfo":"NFO","hul":"HUL","ars":"ARS","bri":"BRI","vik":"VIK","fen":"FEN"};
-var NC={"Aston Villa":"AVL","Man City":"MCI","Newcastle":"NEW","Brentford":"BRE","Spurs":"TOT","Nottingham Forest":"NFO","Hull City":"HUL","Arsenal":"ARS","Brighton":"BRI","Viking":"VIK","Fenerbahçe":"FEN"};
+var OC={"ful":"FUL","mci":"MCI","new":"NEW","bre":"BRE","tot":"TOT","nfo":"NFO","hul":"HUL","ars":"ARS","bri":"BRI","vik":"VIK","fen":"FEN"};
+var NC={"Fulham":"FUL","Aston Villa":"AVL","Man City":"MCI","Newcastle":"NEW","Brentford":"BRE","Spurs":"TOT","Nottingham Forest":"NFO","Hull City":"HUL","Arsenal":"ARS","Brighton":"BRI","Viking":"VIK","Fenerbahçe":"FEN"};
 var FXC=["FUL","MUN","SUN","IPS"];
 var logos={},assetsNs=null,isEd=false;
 function lg(c){if(c!=="AVL")return"";var u=logos[c];return u&&/^(https?:\/\/|(players|teams)\/[\w.-]+$)/.test(u)?'<img class="lg" src="'+u+'" alt="" loading="lazy">':""}
@@ -492,7 +495,7 @@ var F=[
 ["2026-10-17","5:30pm","NEW","Newcastle","A","PL","1–0"],
 ["2026-10-21","8:00pm","VIK","Viking","H","UCL","3–1"],
 ["2026-10-24","12:30pm","MCI","Man City","H","PL","2–1"],
-["2026-10-31","8:00pm","FUL","Fulham","H","PL"],
+["2026-10-31","8:00pm","FUL","Fulham","H","PL","1–0"],
 ["2026-11-03","8:00pm","BAR","Barcelona","A","UCL"],
 ["2026-11-08","4:30pm","MUN","Man United","A","PL"],
 ["2026-11-21","3:00pm","SUN","Sunderland","H","PL"],
