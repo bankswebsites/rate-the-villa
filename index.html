@@ -281,7 +281,7 @@ function render(){
  var box=document.getElementById("cards");box.innerHTML="";
  list.forEach(function(n){
   var s=stats(n),my=(mine[cur.id]||{})[n],isM=mineM[cur.id]===n;
-  if(n===list[0])box.appendChild(el("h3","sh","Starting XI"));
+  if(n===list[0])box.appendChild(el("h3","sh","Starting Line Up"));
   if(cur.bn&&n===cur.bn[0])box.appendChild(el("h3","sh","Substitutes"));
   var card=el("div","card");
   var ph=el("div","ph",'<span class="bd">'+BD[posOf(n)]+'</span>'+phHtml(n));
