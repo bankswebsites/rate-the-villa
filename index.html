@@ -199,7 +199,7 @@ html{font-size:118%}
 <script>
 var M=[
 {id:"ful",d:"Sat 31 Oct",h:"Aston Villa",a:"Fulham",hs:1,as:1,o:"Fulham",ven:"H",r:"D",live:1,st:"44% · 9–11 · 5–2",
- gk:["Suzuki"],df:["Cash","Lindelöf","Torres","Maatsen"],mf:["Kamara","Goretzka","McGinn","Manzambi"],fw:["Alysson","Jackson"],bn:["Madjo","Mbaye","Harwood-Bellis","Gomes"]},
+ gk:["Suzuki"],df:["Cash","Lindelöf","Torres","Maatsen"],mf:["Kamara","Goretzka","McGinn","Manzambi"],fw:["Alysson","Jackson"],bn:["Bizot","Harwood-Bellis","Mings","Barkley","Buendia","Garnacho","Mbaye","Madjo","Gomes"]},
 {id:"mci",d:"Sat 24 Oct",h:"Aston Villa",a:"Man City",hs:2,as:1,o:"Man City",ven:"H",r:"W",st:"37% · 8–15 · 2–7",
  gk:["Suzuki"],df:["Maatsen","Torres","Lindelöf","Cash"],mf:["McGinn","Manzambi","Gomes","Kamara"],fw:["Alysson","Jackson"],bn:["Hemmings","Mbaye","Madjo","Barkley"]},
 {id:"vik",d:"Wed 21 Oct",h:"Aston Villa",a:"Viking",hs:3,as:1,o:"Viking",ven:"H",r:"W",c:"UCL",st:"54% · 19–10 · 9–4",
@@ -228,7 +228,7 @@ var STAR=function(on){return '<svg viewBox="0 0 24 24" width="22" height="22" ar
 var cur=M[0],db=null,uid=null,canVote=false,msg="",votes=[],mine={},motm=[],mineM={};
 function norm(r){r=r||{};var k=Object.keys(r);if(k.length&&typeof r[k[0]]==="number")return {mci:r};return r}
 function names(){return [].concat(cur.gk,cur.df,cur.mf,cur.fw,cur.bn||[])}
-var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK","Harwood-Bellis":"DF"};
+var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK","Harwood-Bellis":"DF","Bizot":"GK","Mings":"DF","Buendia":"MF","Garnacho":"FW"};
 function posOf(n){if(cur.bn&&cur.bn.indexOf(n)>=0)return BPOS[n]||"MF";return cur.gk.indexOf(n)>=0?"GK":cur.df.indexOf(n)>=0?"DF":cur.mf.indexOf(n)>=0?"MF":"FW"}
 var RC={},MC={},VC={};
 function stats(n){
