@@ -119,6 +119,18 @@ section[hidden]{display:none}
 .subn b{color:var(--fg);font-weight:700}
 .ar{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%}
 .ar.u{background:#1fb86a}.ar.d{background:#e0405a}
+.shr{margin:-4px 0 12px}
+.shr button,.shm button{font:inherit;font-weight:700;cursor:pointer}
+#shareBtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:12px;border:0;background:var(--claret);color:#fff}
+.shm{position:fixed;inset:0;background:rgba(10,6,14,.82);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px}
+.shm[hidden]{display:none}
+.shc{background:var(--card);border:1px solid var(--line);border-radius:16px;max-width:460px;width:100%;padding:14px}
+.shc h3{margin:0 0 10px;font-size:1.05rem}
+.shc canvas{width:100%;height:auto;border-radius:12px;display:block}
+.sha{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.sha button{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.sha .pri{grid-column:1/-1;background:var(--claret);border-color:var(--claret);color:#fff}
+.shn{color:var(--mut);font-size:.8rem;margin-top:8px;min-height:1.1em}
 .sbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .sb{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 4px;text-align:center}
 .sb small{display:block;color:var(--mut);font-size:.6rem;text-transform:uppercase;letter-spacing:.04em}
@@ -183,6 +195,10 @@ html{font-size:118%}
 <p class="sub">Pick a match, rate each player out of 10 and tap the star for your Man of the Match.</p>
 <div class="chips" id="chips"></div>
 <div class="mh" id="mh"></div>
+<div class="shr" id="shr" hidden><button id="shareBtn" type="button">Share my ratings</button></div>
+<div class="shm" id="shm" hidden><div class="shc"><h3>Your ratings</h3><canvas id="shcv" width="1080" height="1350"></canvas>
+<div class="sha"><button class="pri" id="shGo" type="button">Share</button><button id="shCopy" type="button">Copy text</button><button id="shDl" type="button">Save image</button><button id="shX" type="button" style="grid-column:1/-1">Close</button></div><div class="shn" id="shn"></div></div></div>
+
 <div class="layout">
 <aside class="side"><h3>Man of the Match</h3>
 <div class="top3" id="top3"></div>
@@ -276,7 +292,7 @@ function render(){
  var tie=best!==null&&list.filter(function(n){return mc[n]===mc[best]}).length>1;
  var av=c?(sum/c).toFixed(1)+" / 10":"–";document.querySelectorAll(".avgv").forEach(function(e){e.textContent=av});
  document.getElementById("voters").textContent=(voters?voters+(voters===1?" voter":" voters"):"No votes yet")+(best?" · MOTM "+(tie?"tied":best+" ("+mc[best]+")"):"");
- document.getElementById("msg").textContent=msg;
+ document.getElementById("msg").textContent=msg;shareBtnState();
  renderTop3(mc);
  var box=document.getElementById("cards");box.innerHTML="";
  list.forEach(function(n){
@@ -442,7 +458,83 @@ function sendMsg(){
  inp.value="";setCmsg("");replyTo=null;showRbar();saveChat();
 }
 function delMsg(i){myMsgs=myMsgs.filter(function(x){return x.i!==i});saveChat()}
+
+function myList(){
+ var r=mine[cur.id]||{};
+ return names().filter(function(n){return r[n]>=1}).map(function(n){return {n:n,r:r[n]}});
+}
+function shareText(){
+ var l=myList(),m=mineM[cur.id];
+ var t="My ratings v "+cur.o+" ("+(cur.ven==="H"?cur.hs+"–"+cur.as:cur.as+"–"+cur.hs)+")\n\n"+l.map(function(x){return x.n+" "+x.r}).join("\n");
+ if(m)t+="\n\nMan of the Match: "+m;
+ return t+"\n\nRate the Villa: ratethevilla.com";
+}
+function rcol(v){return v>=8?"#1fb86a":v>=6?"#95bfe5":v>=4?"#e0a63a":"#e0405a"}
+function drawShare(logo){
+ var l=myList(),m=mineM[cur.id],cv=document.getElementById("shcv"),W=1080,rowH=72,lw=380,lh=logo?lw*logo.height/logo.width:90,hy=50+lh+70,top=hy+110,
+     H=Math.max(1000,top+l.length*rowH+(m?150:60)+120);
+ cv.width=W;cv.height=H;var c=cv.getContext("2d");
+ var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#2a0a1b");g.addColorStop(1,"#670e36");c.fillStyle=g;c.fillRect(0,0,W,H);
+ c.fillStyle="#95bfe5";c.fillRect(0,0,W,12);
+ if(logo){c.drawImage(logo,60,50,lw,lh)}
+ else{c.fillStyle="#fff";c.font="800 64px system-ui,sans-serif";c.fillText("Rate the Villa",60,110)}
+ c.fillStyle="#fff";c.font="700 54px system-ui,sans-serif";
+ c.fillText(cur.h+" "+cur.hs+"–"+cur.as+" "+cur.a,60,hy);
+ c.fillStyle="#c9b8c4";c.font="400 32px system-ui,sans-serif";
+ c.fillText(cur.d+" 2026 · "+(cur.c==="UCL"?"Champions League":"Premier League"),60,hy+50);
+ if(cur.ven!=="H"){c.fillText("",0,0)}
+ l.forEach(function(x,i){
+  var y=top+i*rowH;
+  c.fillStyle="rgba(255,255,255,.08)";rr(c,60,y,W-120,rowH-10,16);c.fill();
+  c.fillStyle="#fff";c.font="600 38px system-ui,sans-serif";c.textBaseline="middle";c.fillText(x.n+(m===x.n?"  ★":""),88,y+(rowH-10)/2);
+  c.fillStyle=rcol(x.r);rr(c,W-60-130,y+6,110,rowH-22,14);c.fill();
+  c.fillStyle="#15101a";c.font="800 38px system-ui,sans-serif";c.textAlign="center";c.fillText(String(x.r),W-60-75,y+(rowH-10)/2);c.textAlign="left";
+ });
+ c.textBaseline="alphabetic";
+ var by=top+l.length*rowH+30;
+ if(m){c.fillStyle="#e0a63a";c.font="700 40px system-ui,sans-serif";c.fillText("★ Man of the Match: "+m,60,by+40);by+=90}
+ c.fillStyle="#95bfe5";c.font="700 36px system-ui,sans-serif";c.fillText("ratethevilla.com",60,H-60);
+}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function openShare(){
+ if(!myList().length)return;
+ document.getElementById("shn").textContent="";
+ var im=new Image();im.onload=function(){drawShare(im)};im.onerror=function(){drawShare(null)};im.src="rate-the-villa-header.png";
+ document.getElementById("shm").hidden=false;
+}
+function shareBlob(cb){
+ var cv=document.getElementById("shcv");
+ try{cv.toBlob(function(b){cb(b)},"image/png")}catch(e){cb(null)}
+}
+function wireShare(){
+ var n=document.getElementById("shn");
+ document.getElementById("shareBtn").onclick=openShare;
+ document.getElementById("shX").onclick=function(){document.getElementById("shm").hidden=true};
+ document.getElementById("shm").onclick=function(e){if(e.target===this)this.hidden=true};
+ document.getElementById("shCopy").onclick=function(){
+  var t=shareText();
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){n.textContent="Copied. Paste it anywhere."},function(){n.textContent="Couldn’t copy. Long-press the image to save it instead."});
+  else n.textContent="Couldn’t copy on this browser."
+ };
+ document.getElementById("shDl").onclick=function(){
+  shareBlob(function(b){if(!b){n.textContent="Couldn’t save the image. Try Copy text.";return}
+   var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="my-villa-ratings.png";document.body.appendChild(a);a.click();a.remove();n.textContent="Image saved."})
+ };
+ document.getElementById("shGo").onclick=function(){
+  shareBlob(function(b){
+   var text=shareText();
+   try{
+    if(b&&navigator.canShare&&navigator.canShare({files:[new File([b],"my-villa-ratings.png",{type:"image/png"})]})){
+     navigator.share({files:[new File([b],"my-villa-ratings.png",{type:"image/png"})],text:text}).catch(function(){});return}
+    if(navigator.share){navigator.share({text:text}).catch(function(){});return}
+   }catch(e){}
+   n.textContent="Sharing isn’t supported here. Use Copy text or Save image."
+  })
+ };
+}
+function shareBtnState(){var s=document.getElementById("shr");if(s)s.hidden=!myList().length}
 function wire(){
+ wireShare();
  document.getElementById("tR").onclick=function(){showView("rate")};
  document.getElementById("tC").onclick=function(){showView("chat")};
  document.getElementById("csend").onclick=sendMsg;
