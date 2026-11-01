@@ -142,6 +142,14 @@ section[hidden]{display:none}
 .sha button{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
 .sha .pri{grid-column:1/-1;background:var(--claret);border-color:var(--claret);color:#fff}
 .shn{color:var(--mut);font-size:.8rem;margin-top:8px;min-height:1.1em}
+.bw{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.bwc{background:var(--card);border-radius:12px;padding:10px 8px;text-align:center;border-top:3px solid var(--line)}
+.bwc.b{border-top-color:#1fb86a}.bwc.w{border-top-color:#e0405a}
+.bwc em{display:block;font-style:normal;color:var(--mut);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em}
+.bwc b{display:block;font-size:1rem;margin:3px 0 0;word-break:break-word}
+.bwc strong{display:block;font-size:1.5rem;color:var(--claret);line-height:1.2}
+.bwc.b strong{color:#1fb86a}.bwc.w strong{color:#e0405a}
+.bwc small{color:var(--mut);font-size:.72rem}
 .sbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .sb{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 4px;text-align:center}
 .sb small{display:block;color:var(--mut);font-size:.6rem;text-transform:uppercase;letter-spacing:.04em}
@@ -214,6 +222,7 @@ html{font-size:118%}
 <aside class="side"><h3>Man of the Match</h3>
 <div class="top3" id="top3"></div>
 <div class="team"><span>Team average</span><b class="avgv">–</b></div>
+<div class="bw" id="bw"></div>
 <p class="note" id="voters"></p>
 <p class="note" id="msg"></p>
 <div class="shr2" id="shr2" hidden><button id="shareBtn2" type="button">Share my ratings</button></div></aside>
@@ -305,7 +314,7 @@ function render(){
  var av=c?(sum/c).toFixed(1)+" / 10":"–";document.querySelectorAll(".avgv").forEach(function(e){e.textContent=av});
  document.getElementById("voters").textContent=(voters?voters+(voters===1?" voter":" voters"):"No votes yet")+(best?" · MOTM "+(tie?"tied":best+" ("+mc[best]+")"):"");
  document.getElementById("msg").textContent=msg;shareBtnState();
- renderTop3(mc);
+ renderTop3(mc);renderBW();
  var box=document.getElementById("cards");box.innerHTML="";
  list.forEach(function(n){
   var s=stats(n),my=(mine[cur.id]||{})[n],isM=mineM[cur.id]===n;
@@ -331,6 +340,14 @@ function render(){
   ft.appendChild(st);
   ft.appendChild(el("span","",(s.t?s.avg.toFixed(1)+" avg · "+s.t+(s.t===1?" vote":" votes"):"No votes yet")+(mc[n]?" · "+mc[n]+" MOTM":"")+(my?" · You voted: "+my:"")));
   rt.appendChild(ft);card.appendChild(rt);box.appendChild(card)});
+}
+function renderBW(){
+ var bw=document.getElementById("bw");if(!bw)return;bw.innerHTML="";
+ var rk=names().map(function(n){var s=stats(n);return {n:n,avg:s.avg,t:s.t}}).filter(function(x){return x.t>0});
+ rk.sort(function(a,b){return b.avg-a.avg||b.t-a.t});
+ var best=rk[0],worst=rk.length>1?rk.slice().sort(function(a,b){return a.avg-b.avg||b.t-a.t})[0]:null;
+ function tile(c,l,x){return '<div class="bwc '+c+'"><em>'+l+'</em>'+(x?'<b>'+x.n+'</b><strong>'+x.avg.toFixed(1)+'</strong><small>'+x.t+(x.t===1?" vote":" votes")+'</small>':'<b>–</b><small>No votes yet</small>')+'</div>'}
+ bw.innerHTML=tile("b","Best rated",best)+tile("w","Worst rated",worst);
 }
 function renderTop3(mc){
  var t=document.getElementById("top3");t.innerHTML="";
