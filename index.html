@@ -125,7 +125,10 @@ section[hidden]{display:none}
 .subn b{color:var(--fg);font-weight:700}
 .ar{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%}
 .ar.u{background:#1fb86a}.ar.d{background:#e0405a}
-.shr{margin:-4px 0 12px}
+.shr{display:none}
+.shrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.shrh{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:0;border-radius:999px;padding:8px 14px;background:var(--claret);color:#fff;white-space:nowrap}
+@media(min-width:900px){.shrh{display:none}}
 .shr2{display:none}
 @media(min-width:900px){.shr{display:none}.shr2{display:block;margin-top:12px}#shareBtn2{display:flex;align-items:center;justify-content:center;width:100%;padding:12px;border-radius:12px;border:0;background:var(--claret);color:#fff;font:inherit;font-weight:700;cursor:pointer}}
 .shr button,.shm button{font:inherit;font-weight:700;cursor:pointer}
@@ -306,7 +309,9 @@ function render(){
  var box=document.getElementById("cards");box.innerHTML="";
  list.forEach(function(n){
   var s=stats(n),my=(mine[cur.id]||{})[n],isM=mineM[cur.id]===n;
-  if(n===list[0])box.appendChild(el("h3","sh","Starting Line Up"));
+  if(n===list[0]){var hh=el("h3","sh shrow","<span>Starting Line Up</span>");
+   if(myList().length){var sb=el("button","shrh","Share my ratings");sb.type="button";sb.onclick=openShare;hh.appendChild(sb)}
+   box.appendChild(hh)}
   if(cur.bn&&n===cur.bn[0])box.appendChild(el("h3","sh","Substitutes"));
   var card=el("div","card");
   var ph=el("div","ph",'<span class="bd">'+BD[posOf(n)]+'</span>'+phHtml(n));
