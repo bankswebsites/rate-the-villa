@@ -700,7 +700,7 @@ async function init(){
   db.from(table).select("*").then(function(r){var m={};(r.data||[]).forEach(function(x){m[x[col]]=x.url});try{localStorage.setItem(key,JSON.stringify({t:Date.now(),d:m}))}catch(e){}done(m)}).catch(function(){});
  }
  cached("rtv_logos","team_logos","code",function(m){logos=m;render();fx()});
- cached("rtv_pics","player_photos","slug",function(m){pics=m;render()});
+ cached("rtv_pics2","player_photos","slug",function(m){pics=m;render()});
  refresh(true);setInterval(function(){refresh()},45000);document.addEventListener("visibilitychange",function(){if(!document.hidden)refresh()});
  try{
   var ss=await db.auth.getSession(),sess=ss.data&&ss.data.session;
