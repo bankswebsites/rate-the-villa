@@ -91,6 +91,8 @@ h3{margin:0 0 6px;font-size:1rem}
 .layout{display:grid;gap:14px;margin-top:48px}
 section[hidden]{display:none}
 #vChat{max-width:1120px}
+.ytbox{background:var(--card);border-radius:12px;height:min(70vh,640px);overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px}
+.ytbox iframe{width:100%;height:100%;border:0;border-radius:12px}
 .tabs{display:flex;gap:8px;margin:12px 0}
 .tabs button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:600 1rem var(--hd);letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
 .tabs button.on{background:var(--claret);color:#fff;border-color:var(--claret)}
@@ -204,7 +206,6 @@ html{font-size:118%}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<style>#tC{display:none!important}</style>
 </head>
 <body>
 <main>
@@ -234,16 +235,9 @@ html{font-size:118%}
 <div id="logoAdmin" hidden><h3 style="margin-top:22px">Team logos (editors only)</h3><p class="note">Upload a logo for each team and everyone who opens the page will see it.</p><div class="lgrid" id="lgrid"></div><p class="note" id="lmsg" style="margin-top:8px"></p></div>
 </section>
 <section id="vChat" hidden>
-<div class="cmain">
 <p class="sub">Talk about the game with other fans. Keep it friendly and about the football.</p>
-<div class="threads" id="threads"></div>
-<div class="chat" id="chatBox"></div>
-<div class="join" id="join" hidden><p class="note" style="margin:0 0 8px">Pick a name to join the chat. Everyone will see it.</p><div class="send" style="margin-top:0"><input id="nin" maxlength="20" placeholder="Your name" autocomplete="off"><button id="njoin">Join chat</button></div></div>
-<div class="rbar" id="rbar" hidden><span id="rtxt"></span><button id="rx" aria-label="Cancel reply">✕</button></div>
-<div class="send" id="sendRow"><input id="cin" maxlength="300" placeholder="Say something about the game…" autocomplete="off" disabled><button id="csend" disabled>Send</button></div>
-<p class="note" id="cmsg" style="margin-top:8px"></p>
-</div>
-<aside class="ctop" id="ctop"></aside>
+<div class="ytbox" id="ytBox"><p class="note">Fan chat opens when a live stream is on. Check back at match time.</p></div>
+<p class="note" style="margin-top:8px">Chat is powered by YouTube. You’ll need to sign in with a Google account to post.</p>
 </section>
 </main>
 <script>
@@ -387,110 +381,24 @@ function voteMotm(n){
  else{mineM[cur.id]=n;msg="";render();
   db.from("motm").upsert({user_id:uid,match_id:cur.id,player:n}).then(function(x){if(x.error)fail();else refresh(true)});}
 }
-var T=[{id:"ful",l:"v Fulham · next match"}].concat(M.slice(0,5).map(function(m){return {id:m.id,l:"v "+m.o+" · "+m.d.split(" ").slice(1).join(" ")}}));
-var thread="ful",chatDocs=[],myMsgs=[],myName="",userNs=null,lastSend=0,view="rate",open={},replyTo=null,myLikes=[];
-function setCmsg(t){document.getElementById("cmsg").textContent=t}
+var YT_LIVE="";/* paste the YouTube live stream video ID here, e.g. "dQw4w9WgXcQ" */
+var view="rate",chatLoaded=false;
 function showView(v){
  view=v;
  document.getElementById("vRate").hidden=v!=="rate";
  document.getElementById("vChat").hidden=v!=="chat";
  document.getElementById("tR").className=v==="rate"?"on":"";
  document.getElementById("tC").className=v==="chat"?"on":"";
- if(v==="chat")renderChat(true);
-}
-async function renderChat(snap){
- if(!canVote)setCmsg(msg||"Sign in to claude.ai to join the chat.");
- syncJoin();
- var th=document.getElementById("threads");th.innerHTML="";
- T.forEach(function(t){var b=el("button",t.id===thread?"on":"",t.l);b.onclick=function(){thread=t.id;replyTo=null;showRbar();renderChat(true)};th.appendChild(b)});
- var all=[];
- chatDocs.forEach(function(d){(d.msgs||[]).forEach(function(x){if(x&&x.m===thread&&typeof x.x==="string")all.push({u:d.uid,i:x.i,t:x.t||0,x:x.x,p:typeof x.p==="string"?x.p:""})})});
- all.sort(function(a,b){return a.t-b.t});
- var ids=[];all.forEach(function(m){if(m.u&&ids.indexOf(m.u)<0)ids.push(m.u)});
- var nmap={};chatDocs.forEach(function(d){if(d&&d.uid&&typeof d.name==="string")nmap[d.uid]=d.name.slice(0,20)});
- var lk={};chatDocs.forEach(function(d){var seen={};(Array.isArray(d.likes)?d.likes:[]).forEach(function(id){if(typeof id==="string"&&!seen[id]){seen[id]=1;lk[id]=(lk[id]||0)+1}})});
- var box=document.getElementById("chatBox");
- var st=box.scrollTop;var bottom=snap||box.scrollHeight-box.scrollTop-box.clientHeight<60;
- box.innerHTML="";
- if(!all.length)box.appendChild(el("div","note","No messages yet. Start the chat!"));
- function bub(m){
-  var mine2=m.u===uid,d=el("div","m"+(mine2?" me":""));
-  var nm=document.createElement("b");nm.textContent=mine2?"You":(nmap[m.u]||"Fan");d.appendChild(nm);
-  var tx=document.createElement("span");tx.textContent=m.x;d.appendChild(tx);
-  var sm=document.createElement("small");sm.textContent=new Date(m.t).toLocaleString([],{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-  var liked=myLikes.indexOf(m.i)>=0,lb=document.createElement("button");lb.className="lk"+(liked?" on":"");lb.textContent=(liked?"♥ ":"♡ ")+(lk[m.i]||"");lb.disabled=!canVote||mine2;lb.setAttribute("aria-label","Like");lb.onclick=function(){toggleLike(m.i)};sm.appendChild(lb);
-  var rb=document.createElement("button");rb.textContent="reply";rb.onclick=function(){setReply({i:(m.p&&byId[m.p])?m.p:m.i,n:mine2?"yourself":(nmap[m.u]||"Fan"),x:m.x.slice(0,60)})};sm.appendChild(rb);
-  if(mine2){var del=document.createElement("button");del.textContent="delete";del.onclick=function(){delMsg(m.i)};sm.appendChild(del)}
-  d.appendChild(sm);return d}
- var byId={},tops=[],rps={};
- all.forEach(function(m){byId[m.i]=m});
- all.forEach(function(m){if(m.p&&byId[m.p]){(rps[m.p]=rps[m.p]||[]).push(m)}else tops.push(m)});
- tops.forEach(function(m){
-  var w=el("div","tw");w.appendChild(bub(m));
-  var r=rps[m.i]||[];
-  if(r.length){
-   var tg=el("button","tg",(open[m.i]?"▾ ":"▸ ")+r.length+(r.length===1?" reply":" replies"));
-   tg.onclick=function(){open[m.i]=!open[m.i];renderChat(false)};w.appendChild(tg);
-   if(open[m.i]){var rl=el("div","rps");r.forEach(function(x){rl.appendChild(bub(x))});w.appendChild(rl)}
+ if(v==="chat"&&!chatLoaded){
+  var box=document.getElementById("ytBox");
+  if(YT_LIVE){
+   var f=document.createElement("iframe");
+   f.src="https://www.youtube.com/live_chat?v="+encodeURIComponent(YT_LIVE)+"&embed_domain="+encodeURIComponent(location.hostname);
+   f.title="Live chat";f.loading="lazy";f.allow="clipboard-write";
+   box.innerHTML="";box.appendChild(f);chatLoaded=true;
   }
-  box.appendChild(w)});
- if(bottom)box.scrollTop=box.scrollHeight;else box.scrollTop=st;
- var tp=all.filter(function(m){return lk[m.i]>0}).sort(function(a,b){return lk[b.i]-lk[a.i]||b.t-a.t}).slice(0,5);
- var ct=document.getElementById("ctop");ct.innerHTML="";
- var h=document.createElement("h3");h.textContent="Top 5 liked messages";ct.appendChild(h);
- if(!tp.length)ct.appendChild(el("p","note","No likes yet. Tap the ♡ on a message you like."));
- tp.forEach(function(m,i){
-  var c=el("div","tl"),hd=el("div","tlh");
-  var a=document.createElement("b");a.textContent="#"+(i+1)+" "+(m.u===uid?"You":(nmap[m.u]||"Fan"));
-  var n=document.createElement("span");n.textContent="♥ "+lk[m.i];
-  hd.appendChild(a);hd.appendChild(n);
-  var t=document.createElement("p");t.textContent=m.x.length>120?m.x.slice(0,117)+"…":m.x;
-  c.appendChild(hd);c.appendChild(t);ct.appendChild(c)});
+ }
 }
-function toggleLike(id){
- if(!canVote||!db||!uid)return;
- var k=myLikes.indexOf(id);
- if(k>=0)myLikes.splice(k,1);else myLikes.push(id);
- if(myLikes.length>500)myLikes=myLikes.slice(-500);
- saveChat(true);
-}
-function showRbar(){
- var b=document.getElementById("rbar");
- b.hidden=!replyTo;
- if(replyTo)document.getElementById("rtxt").textContent="Replying to "+replyTo.n+": "+replyTo.x;
-}
-function setReply(r){
- replyTo=r;open[r.i]=true;showRbar();renderChat(false);
- document.getElementById("cin").focus();
-}
-function syncJoin(){
- var need=canVote&&!myName;
- document.getElementById("join").hidden=!need;
- document.getElementById("sendRow").hidden=need;
-}
-function joinName(){
- var v=document.getElementById("nin").value.replace(/\s+/g," ").trim().slice(0,20);
- if(!canVote||!db||!uid||!v)return;
- myName=v;saveChat();
-}
-function saveChat(keep){
- var found=false;
- chatDocs.forEach(function(d){if(d.uid===uid){d.msgs=myMsgs;d.name=myName;d.likes=myLikes;found=true}});
- if(!found)chatDocs.push({uid:uid,name:myName,msgs:myMsgs,likes:myLikes});
- renderChat(!keep);
- db.doc("chat/"+uid).set({uid:uid,name:myName,msgs:myMsgs,likes:myLikes}).catch(function(){setCmsg("Couldn’t send. Try again.")});
-}
-function sendMsg(){
- var inp=document.getElementById("cin"),v=inp.value.trim();
- if(!v||!canVote||!db||!uid||!myName)return;
- var now=Date.now();
- if(now-lastSend<3000){setCmsg("Slow down a little.");return}
- lastSend=now;
- var nm0={i:now.toString(36)+Math.random().toString(36).slice(2,6),m:thread,x:v.slice(0,300),t:now};if(replyTo)nm0.p=replyTo.i;myMsgs.push(nm0);
- if(myMsgs.length>200)myMsgs=myMsgs.slice(-200);
- inp.value="";setCmsg("");replyTo=null;showRbar();saveChat();
-}
-function delMsg(i){myMsgs=myMsgs.filter(function(x){return x.i!==i});saveChat()}
 
 function myList(){
  var r=mine[cur.id]||{};
@@ -580,11 +488,6 @@ function wire(){
  wireShare();
  document.getElementById("tR").onclick=function(){showView("rate")};
  document.getElementById("tC").onclick=function(){showView("chat")};
- document.getElementById("csend").onclick=sendMsg;
- document.getElementById("njoin").onclick=joinName;
- document.getElementById("rx").onclick=function(){replyTo=null;showRbar()};
- document.getElementById("nin").addEventListener("keydown",function(e){if(e.key==="Enter")joinName()});
- document.getElementById("cin").addEventListener("keydown",function(e){if(e.key==="Enter")sendMsg()});
  if(location.hash==="#chat")showView("chat");
 }
 var TEAMS=[["AVL","Aston Villa"],["MCI","Man City"],["NEW","Newcastle"],["BRE","Brentford"],["TOT","Spurs"],["NFO","Nottingham Forest"],["FUL","Fulham"],["MUN","Man United"],["SUN","Sunderland"],["IPS","Ipswich"],["HUL","Hull City"],["ARS","Arsenal"],["BRI","Brighton"],["EVE","Everton"],["CRY","Crystal Palace"],["COV","Coventry"],["LEE","Leeds"],["LFC","Liverpool"],["BOU","Bournemouth"],["BRU","Club Brugge"],["FEN","Fenerbahçe"],["VIK","Viking"],["BAR","Barcelona"],["GAL","Galatasaray"],["PSG","PSG"],["BVB","Dortmund"],["SLA","Slavia Prague"]];
