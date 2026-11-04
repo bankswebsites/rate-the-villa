@@ -381,7 +381,7 @@ function voteMotm(n){
  else{mineM[cur.id]=n;msg="";render();
   db.from("motm").upsert({user_id:uid,match_id:cur.id,player:n}).then(function(x){if(x.error)fail();else refresh(true)});}
 }
-var YT_LIVE="";/* paste the YouTube live stream video ID here, e.g. "dQw4w9WgXcQ" */
+var YT_LIVE="3xyrymh2GII";/* paste the YouTube live stream video ID here, e.g. "dQw4w9WgXcQ" */
 var view="rate",chatLoaded=false;
 function showView(v){
  view=v;
