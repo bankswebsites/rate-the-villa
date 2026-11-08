@@ -243,7 +243,7 @@ html{font-size:118%}
 <script>
 var M=[
 {id:"mun",d:"Sun 8 Nov",h:"Man United",a:"Aston Villa",hs:0,as:0,o:"Man United",ven:"A",r:"D",live:1,st:"50% · 0–0 · 0–0",
- gk:["Suzuki"],df:["Maatsen","Torres","Harwood-Bellis","Lindelöf"],mf:["Goretzka","Kamara","McGinn","Manzambi","Alysson"],fw:["Jackson"],bn:[]},
+ gk:["Suzuki"],df:["Maatsen","Torres","Harwood-Bellis","Lindelöf"],mf:["Goretzka","Kamara","McGinn","Manzambi","Alysson"],fw:["Jackson"],bn:["Mings","Barkley","Buendia","Mbaye","Gomes","Madjo","Bizot","Cisse","Hemmings"]},
 {id:"bar",d:"Tue 3 Nov",h:"Barcelona",a:"Aston Villa",hs:3,as:0,o:"Barcelona",ven:"A",r:"L",c:"UCL",st:"37% · 8–15 · 1–7",
  gk:["Suzuki"],df:["Cash","Lindelöf","Torres","Maatsen"],mf:["Kamara","Gomes","McGinn","Buendia","Manzambi"],fw:["Jackson"],bn:["Goretzka","Barkley","Mbaye","Alysson","Abraham","Harwood-Bellis","Mings","Garnacho","Hemmings","Bizot","Wright"],on:{"Goretzka":["62′","Manzambi"],"Barkley":["62′","Gomes"],"Mbaye":["62′","Buendia"],"Alysson":["77′","McGinn"],"Abraham":["77′","Jackson"]},off:{"Manzambi":["62′","Goretzka"],"Gomes":["62′","Barkley"],"Buendia":["62′","Mbaye"],"McGinn":["77′","Alysson"],"Jackson":["77′","Abraham"]}},
 {id:"ful",d:"Sat 31 Oct",h:"Aston Villa",a:"Fulham",hs:1,as:1,o:"Fulham",ven:"H",r:"D",st:"45% · 16–14 · 3–5",
@@ -276,7 +276,7 @@ var STAR=function(on){return '<svg viewBox="0 0 24 24" width="22" height="22" ar
 var cur=M[0],db=null,uid=null,canVote=false,msg="",votes=[],mine={},motm=[],mineM={};
 function norm(r){r=r||{};var k=Object.keys(r);if(k.length&&typeof r[k[0]]==="number")return {mci:r};return r}
 function names(){return [].concat(cur.gk,cur.df,cur.mf,cur.fw,cur.bn||[])}
-var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK","Harwood-Bellis":"DF","Bizot":"GK","Mings":"DF","Buendia":"MF","Garnacho":"FW","Abraham":"FW"};
+var BPOS={"Hemmings":"FW","Mbaye":"FW","Madjo":"FW","Alysson":"FW","Barkley":"MF","Bogarde":"MF","Goretzka":"MF","Kamara":"MF","Gomes":"MF","Wright":"GK","Harwood-Bellis":"DF","Bizot":"GK","Mings":"DF","Buendia":"MF","Garnacho":"FW","Abraham":"FW","Cisse":"DF"};
 function posOf(n){if(cur.bn&&cur.bn.indexOf(n)>=0)return BPOS[n]||"MF";return cur.gk.indexOf(n)>=0?"GK":cur.df.indexOf(n)>=0?"DF":cur.mf.indexOf(n)>=0?"MF":"FW"}
 var RC={},MC={},VC={};
 function stats(n){
